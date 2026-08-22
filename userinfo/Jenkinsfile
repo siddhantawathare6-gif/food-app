@@ -7,10 +7,10 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = "siddhant9960/fa-order-service"
+        DOCKER_IMAGE = "siddhant9960/fa-userinfo-service"
         DOCKER_TAG = "0.0.${BUILD_NUMBER}"
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        SONAR_PROJECT_KEY = "order-service"
+        SONAR_PROJECT_KEY = "userinfo-service"
     }
 
     stages {
@@ -88,9 +88,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh """
-                    docker stop order-service || true
-                    docker rm order-service || true
-                    docker run -d --name order-service --network food-app-network -p 9097:9097 ${DOCKER_IMAGE}:latest
+                    docker stop userinfo-service || true
+                    docker rm userinfo-service || true
+                    docker run -d --name userinfo-service --network food-app-network -p 9093:9093 ${DOCKER_IMAGE}:latest
                 """
             }
         }
@@ -98,10 +98,10 @@ pipeline {
 
     post {
         success {
-            echo "order-service pipeline succeeded"
+            echo "userinfo-service pipeline succeeded"
         }
         failure {
-            echo "order-service pipeline failed"
+            echo "userinfo-service pipeline failed"
         }
         always {
             sh 'docker logout'
