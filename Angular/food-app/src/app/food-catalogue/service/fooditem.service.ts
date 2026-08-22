@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { API_URL_FC } from '../../constants/url'; 
+//import { API_URL_FC } from '../../constants/url'; 
+import { getServiceUrl } from '../../constants/url';
 import { FoodCataloguePage } from '../../shared/model/FoodCataloguePage';
 
 @Injectable({

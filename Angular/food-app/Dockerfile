@@ -1,25 +1,13 @@
-# Stage 1: Build Angular application
-FROM node:22.23.2 as build
-
+FROM node:22.23.2 AS build
 WORKDIR /app
-
-# Install dependencies
 COPY package*.json ./
 RUN npm install
-
-# Copy source code
 COPY . .
-
-# Build Angular application
 RUN npm run build
+RUN ls -la /app/dist || echo "NO DIST FOLDER CREATED"
 
-# Stage 2: Serve Angular application using Nginx
 FROM nginx:alpine
-
-# Copy Angular build output
-COPY --from=build /app/dist/food-app /usr/share/nginx/html
-
-# Expose HTTP port
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist/food-app/browser /usr/share/nginx/html
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]

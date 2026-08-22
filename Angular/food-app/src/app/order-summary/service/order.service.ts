@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import {  API_URL_Order } from '../../constants/url'; 
+//import {  API_URL_Order } from '../../constants/url'; 
+import { getServiceUrl } from '../../constants/url';
 
 @Injectable({
   providedIn: 'root'

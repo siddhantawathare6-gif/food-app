@@ -17,10 +17,25 @@ export class FoodCatalogueComponent {
   restaurantId!: number;
   foodItemResponse!: FoodCataloguePage;
   foodItemCart: FoodItem[] = [];
-  orderSummary: FoodCataloguePage;
+  orderSummary: FoodCataloguePage ;
 
 
   constructor(private route: ActivatedRoute, private foodItemService: FoodItemService, private router: Router) {
+    // Initialize with default values
+    this.foodItemResponse = {
+      foodItemsList: [],
+      restaurant: {
+        id: 0,
+        name: '',
+        address: '',
+        city: '',
+        restaurantDescription: ''
+      }
+    };
+    this.orderSummary = {
+      foodItemsList: [],
+      restaurant: null
+    };
   }
 
   ngOnInit() {

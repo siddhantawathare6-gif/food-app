@@ -13,7 +13,7 @@ import { CommonModule, NgIf } from '@angular/common';
 export class RestaurantListingComponent {
 
 
-  public restaurantList: Restaurant[];
+  public restaurantList: Restaurant[] = [];
 
   ngOnInit() {
     this.getAllRestaurants();
@@ -24,7 +24,7 @@ export class RestaurantListingComponent {
   getAllRestaurants() {
     this.restaurantService.getAllRestaurants().subscribe(
       data => {
-        this.restaurantList = data;
+        this.restaurantList = data || [];
       }
     )
   }
