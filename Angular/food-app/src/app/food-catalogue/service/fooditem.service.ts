@@ -10,12 +10,21 @@ import { FoodCataloguePage } from '../../shared/model/FoodCataloguePage';
 })
 export class FoodItemService {
 
-    private apiUrl = API_URL_FC+'/foodCatalogue/fetchRestaurantAndFoodItemsById/';
+    //private apiUrl = API_URL_FC+'/foodCatalogue/fetchRestaurantAndFoodItemsById/';
+
+    private baseUrl = getServiceUrl('FOOD_CATALOGUE');
+  // Or directly: private baseUrl = API_URLS.FOOD_CATALOGUE;
+
 
     constructor(private http: HttpClient) { }
 
     getFoodItemsByRestaurant(id:number): Observable<FoodCataloguePage> {
-        return this.http.get<any>(`${this.apiUrl+id}`)
+        // return this.http.get<any>(`${this.apiUrl+id}`)
+        //   .pipe(
+        //     catchError(this.handleError)
+        //   );
+
+        return this.http.get<any>(`${this.baseUrl}/foodCatalogue/fetchRestaurantAndFoodItemsById/${id}`)
           .pipe(
             catchError(this.handleError)
           );

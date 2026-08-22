@@ -9,12 +9,21 @@ import { API_URL_RL } from '../../constants/url';
 })
 export class RestaurantService {
 
-  private apiUrl = API_URL_RL+'/restaurant/fetchAllRestaurant'; 
+  //private apiUrl = API_URL_RL+'/restaurant/fetchAllRestaurant'; 
+
+    private baseUrl = getServiceUrl('RESTAURANT_SERVICE');
+
 
   constructor(private http: HttpClient) { }
 
   getAllRestaurants(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}`)
+
+    // return this.http.get<any>(`${this.apiUrl}`)
+    //   .pipe(
+    //     catchError(this.handleError)
+    //   );
+
+    return this.http.get<any>(`${this.baseUrl}/fetchAllRestaurant`)
       .pipe(
         catchError(this.handleError)
       );

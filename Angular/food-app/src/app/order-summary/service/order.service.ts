@@ -9,7 +9,8 @@ import {  API_URL_Order } from '../../constants/url';
 
 export class OrderService {
 
-  private apiUrl = API_URL_Order+'/order/saveOrder';
+  //private apiUrl = API_URL_Order+'/order/saveOrder';
+  private baseUrl = getServiceUrl('ORDER_SERVICE');
 
   constructor(private http: HttpClient) { }
 
@@ -21,7 +22,8 @@ export class OrderService {
   };
 
   saveOrder(data: any):Observable<any>  {
-    return this.http.post<any>(this.apiUrl, data);
+    //return this.http.post<any>(this.apiUrl, data);
+    return this.http.post<any>(`${this.baseUrl}/order/saveOrder`, data);
   }
 
   private handleError(error: any) {
