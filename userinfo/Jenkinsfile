@@ -12,10 +12,8 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            steps {
-                dir('userinfo') {                          // <-- ADDED
-                    sh 'checkout scm'
-                } 
+            steps {                      
+                checkout scm
             }
         }
         stage('Build') {
