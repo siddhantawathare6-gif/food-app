@@ -1,7 +1,10 @@
 package com.food.resturant.controller;
 
+import com.food.resturant.constant.ApplicationConstant;
 import com.food.resturant.dto.RestaurantDTO;
+import com.food.resturant.dto.RestaurantPageDto;
 import com.food.resturant.service.RestaurantService;
+import jakarta.ws.rs.QueryParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +23,23 @@ public class RestaurantController {
     }
 
     @GetMapping("/fetchAllRestaurant")
-    public ResponseEntity<List<RestaurantDTO>> fetchAllRestaurant(){
-       List<RestaurantDTO> restaurantList =  restaurantService.featchAllRestaurant();
-       return new ResponseEntity<>(restaurantList, HttpStatus.OK);
+    public ResponseEntity<RestaurantPageDto> fetchAllRestaurant(@RequestParam(value = "pageNo", defaultValue = ApplicationConstant.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                                                @RequestParam(value = "pageSize", defaultValue = ApplicationConstant.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+                                                                @RequestParam(value = "sortBy", defaultValue = ApplicationConstant.DEFAULT_SORT_BY, required = false) String sortBy,
+                                                                @RequestParam(value = "sortDir", defaultValue = ApplicationConstant.DEFAULT_SORT_DIRECTION, required = false) String sortDir) {
+        RestaurantPageDto restaurantPageDto = restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
+        return new ResponseEntity<>(restaurantPageDto, HttpStatus.OK);
     }
 
     @PostMapping("/addRestaurant")
-    public ResponseEntity<RestaurantDTO> saveRestaurant(@RequestBody RestaurantDTO restaurantDTO){
-        RestaurantDTO restaurant =  restaurantService.addRestaurant(restaurantDTO);
+    public ResponseEntity<RestaurantDTO> saveRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
+        RestaurantDTO restaurant = restaurantService.addRestaurant(restaurantDTO);
         return new ResponseEntity<>(restaurant, HttpStatus.CREATED);
     }
 
     @GetMapping("/fetchById/{id}")
-    public ResponseEntity<RestaurantDTO> fetchRestaurantById(@PathVariable Integer id){
-        RestaurantDTO restaurant =  restaurantService.fetchRestaurantById(id);
+    public ResponseEntity<RestaurantDTO> fetchRestaurantById(@PathVariable Integer id) {
+        RestaurantDTO restaurant = restaurantService.fetchRestaurantById(id);
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 }

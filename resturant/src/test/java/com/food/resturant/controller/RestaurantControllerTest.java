@@ -2,6 +2,7 @@ package com.food.resturant.controller;
 
 
 import com.food.resturant.dto.RestaurantDTO;
+import com.food.resturant.dto.RestaurantPageDto;
 import com.food.resturant.service.RestaurantService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,9 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,16 +32,54 @@ public class RestaurantControllerTest {
 
     @Test
     public void testFetchAllRestaurant() {
+        int pageNo = 0;
+        int pageSize = 10;
+        String sortBy = "id";
+        String sortDir = "asc";
+
         List<RestaurantDTO> restaurantList = Arrays.asList(new RestaurantDTO(1, "Taj", "Mumbai street, 102", "Mumbai", "family village taste"),
                 new RestaurantDTO(2, "Sidd", "Red street, 203", "USA", "multi causin"));
-        when(restaurantService.featchAllRestaurant()).thenReturn(restaurantList);
+        RestaurantPageDto restaurantPageDto = new RestaurantPageDto();
+        restaurantPageDto.setRestaurantList(restaurantList);
+        restaurantPageDto.setLast(true);
+        restaurantPageDto.setPageNo(0);
+        restaurantPageDto.setPageSize(5);
+        restaurantPageDto.setTotalElement(2);
+        restaurantPageDto.setTotalPage(1);
 
-        ResponseEntity<List<RestaurantDTO>> response = restaurantController.fetchAllRestaurant();
+        // Mock the service
+        when(restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir))
+                .thenReturn(restaurantPageDto);
+
+        ResponseEntity<RestaurantPageDto> response = restaurantController.fetchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(restaurantList, response.getBody());
+        assertEquals(restaurantPageDto, response.getBody());
 
-        verify(restaurantService, times(1)).featchAllRestaurant();
+        verify(restaurantService, times(1)).featchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
 
+    }
+
+    @Test
+    public void testFetchAllRestaurantWithEmptyResult() {
+        int pageNo = 0;
+        int pageSize = 10;
+        String sortBy = "id";
+        String sortDir = "asc";
+
+        RestaurantPageDto emptyPageDto = new RestaurantPageDto();
+        emptyPageDto.setRestaurantList(Collections.emptyList());
+        emptyPageDto.setTotalElement(0);
+        emptyPageDto.setTotalPage(0);
+
+        when(restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir))
+                .thenReturn(emptyPageDto);
+
+        ResponseEntity<RestaurantPageDto> response = restaurantController.fetchAllRestaurant(
+                pageNo, pageSize, sortBy, sortDir);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().getRestaurantList().isEmpty());
+        assertEquals(0, response.getBody().getTotalElement());
     }
 
 

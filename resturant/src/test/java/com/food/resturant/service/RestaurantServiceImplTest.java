@@ -2,6 +2,7 @@ package com.food.resturant.service;
 
 import com.food.resturant.RestaurantNotFoundException;
 import com.food.resturant.dto.RestaurantDTO;
+import com.food.resturant.dto.RestaurantPageDto;
 import com.food.resturant.entity.Restaurant;
 import com.food.resturant.mapper.RestaurantMapper;
 import com.food.resturant.repository.RestaurantRepository;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,19 +35,43 @@ public class RestaurantServiceImplTest {
 
     @Test
     public void testFeatchAllRestaurant() {
+        // Arrange
+        int pageNo = 0;
+        int pageSize = 10;
+        String sortBy = "id";
+        String sortDir = "asc";
+
         List<Restaurant> restaurantList = Arrays.asList(new Restaurant(1, "Taj", "Mumbai street, 102", "Mumbai",
                         "family village taste"),
                 new Restaurant(2, "Sidd", "Red street, 203", "USA", "multi causin"));
-        when(restaurantRepository.findAll()).thenReturn(restaurantList);
 
-        List<RestaurantDTO> response = restaurantService.featchAllRestaurant();
-        assertEquals(restaurantList.size(), response.size());
-        for (int i = 0; i < response.size(); i++) {
-            RestaurantDTO restaurantDTO = RestaurantMapper.INSTANCE.mapRestaurantToRestaurantDTO(restaurantList.get(i));
-            assertEquals(restaurantDTO, response.get(i));
-        }
+        // Create Pageable object
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
 
-        verify(restaurantRepository, times(1)).findAll();
+        // Create Page with proper constructor - includes pageable and total elements
+        Page<Restaurant> pageRestaurant = new PageImpl<>(
+                restaurantList,           // content
+                pageable,                 // pageable
+                restaurantList.size()     // total elements
+        );
+
+        // Mock the paginated repository call
+        when(restaurantRepository.findAll(any(Pageable.class))).thenReturn(pageRestaurant);
+
+        // Act
+        RestaurantPageDto response = restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(2, response.getRestaurantList().size());
+        assertEquals(0, response.getPageNo());
+        assertEquals(10, response.getPageSize());
+        assertEquals(1, response.getTotalPage());
+        assertEquals(2, response.getTotalElement());
+        assertTrue(response.isLast());
+
+        // Verify the repository was called with correct Pageable
+        verify(restaurantRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
