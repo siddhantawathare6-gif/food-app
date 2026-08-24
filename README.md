@@ -120,7 +120,7 @@ docker run -d \
 Step 6: Deploy User Service
 bash
 docker run -d \
-  --name user-info-service \
+  --name userinfo-service \
   --network food-app-network \
   -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-foodapp-db:3306/userinfo_db \
   -e SPRING_DATASOURCE_USERNAME=root \
