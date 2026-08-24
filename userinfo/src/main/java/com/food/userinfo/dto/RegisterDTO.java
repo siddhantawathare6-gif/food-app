@@ -10,13 +10,11 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class RegisterDTO {
 
-    private Long id;
     private String name;
     private String username;
     private String email;
     private String password;
     private Set<Role> roles;
-
 }

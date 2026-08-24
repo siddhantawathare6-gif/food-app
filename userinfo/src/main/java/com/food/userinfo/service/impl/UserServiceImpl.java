@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserDTO> fetchUserDetailsById(Integer userId) {
+    public ResponseEntity<UserDTO> fetchUserDetailsById(Long userId) {
         Optional<User> fetchedUser =  userRepository.findById(userId);
         if(fetchedUser.isPresent())
             return new ResponseEntity<>(UserMapper.INSTANCE.mapUserToUserDTO(fetchedUser.get()), HttpStatus.OK);
