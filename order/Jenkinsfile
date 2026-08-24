@@ -12,8 +12,19 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
+             steps {
+                // Clean workspace first
+                cleanWs()
+                
+                // Checkout with explicit configuration
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[url: 'https://github.com/siddhantawathare6-gif/food-app.git']]
+                ])
             }
         }
         stage('Build') {
