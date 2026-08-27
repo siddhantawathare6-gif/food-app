@@ -1,0 +1,164 @@
+version: "3.8"
+
+services:
+
+  # ---------- Infra: MySQL (shared instance, 3 databases) ----------
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-foodapp-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: system@123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d   # creates userdb, cataloguedb, restaurantdb on first boot
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-psystem@123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - food-app-network
+
+  # ---------- Infra: MongoDB (order service) ----------
+  mongo:
+    image: mongo:latest
+    container_name: mongo-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - food-app-network
+
+  # ---------- Eureka Server ----------
+  eureka:
+    image: siddhant9960/fa-eureka-server:0.0.1
+    container_name: eureka-server
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    environment:
+      JAVA_OPTS: ""
+    networks:
+      - food-app-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------- User Service (MySQL: userdb) ----------
+  user:
+    image: siddhant9960/fa-userinfo-service:0.0.1
+    container_name: userinfo-service
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    environment:
+      JAVA_OPTS: ""
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-foodapp-db:3306/userdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: system@123
+    depends_on:
+      eureka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - food-app-network
+
+  # ---------- Order Service (Mongo: order_db, calls User) ----------
+  order:
+    image: siddhant9960/fa-order-service:0.0.1
+    container_name: order-service
+    restart: unless-stopped
+    ports:
+      - "9097:9097"
+    environment:
+      JAVA_OPTS: ""
+      EUREKA_SERVER_URL: http://eureka:8761/eureka
+      MONGODB_URI: mongodb://mongo-db:27017/order_db
+    depends_on:
+      eureka:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      user:
+        condition: service_started
+    networks:
+      - food-app-network
+
+  # ---------- Restaurant Service (MySQL: restaurantdb) ----------
+  restaurant:
+    image: siddhant9960/fa-restaurant-service:0.0.1
+    container_name: restaurant-service
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
+    environment:
+      JAVA_OPTS: ""
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-foodapp-db:3306/restaurantdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: system@123
+    depends_on:
+      eureka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - food-app-network
+
+  # ---------- FoodCatalogue Service (MySQL: cataloguedb, calls Restaurant) ----------
+  foodcatalogue:
+    image: siddhant9960/fa-foodcatalogue-service:0.0.1
+    container_name: food-catalogue-service
+    restart: unless-stopped
+    ports:
+      - "9095:9095"
+    environment:
+      JAVA_OPTS: ""
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-foodapp-db:3306/foodcataloguedb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: system@123
+    depends_on:
+      eureka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      restaurant:
+        condition: service_started
+    networks:
+      - food-app-network
+
+
+  # ---------- Angular Frontend ----------
+  frontend:
+    image: siddhant9960/fa-foodapp-angular:0.0.1
+    container_name: food-app-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - eureka
+      - user
+      - order
+      - restaurant
+      - foodcatalogue
+    networks:
+      - food-app-network
+
+
+networks:
+  food-app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  mongo-data:
