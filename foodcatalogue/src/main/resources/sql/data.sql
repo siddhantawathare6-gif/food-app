@@ -1,4 +1,4 @@
-INSERT INTO foodcataloguedb.food_item (id, is_veg, quantity, restaurant_id, price, item_description, item_name) VALUES
+INSERT IGNORE INTO foodcataloguedb.food_item (id, is_veg, quantity, restaurant_id, price, item_description, item_name) VALUES
 -- Restaurant 1: Ravi Kulkarni (Pune)
 (1, 1, 4, 1, 350, 'Classic wood-fired margherita with basil and mozzarella', 'Margherita Pizza'),
 (2, 1, 2, 1, 180, 'Freshly brewed single-origin filter coffee', 'Craft Coffee'),
