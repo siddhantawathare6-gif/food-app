@@ -14,6 +14,10 @@ export class RestaurantListingComponent {
 
 
   public restaurantList: Restaurant[] = [];
+  public totalPages: number = 0;
+  public currentPage: number = 0;
+  public pageSize: number = 4;
+  public pageSizeOptions: number[] = [4, 8, 12, 16];
 
   ngOnInit() {
     this.getAllRestaurants();
@@ -22,12 +26,42 @@ export class RestaurantListingComponent {
   constructor(private router: Router, private restaurantService: RestaurantService) { }
 
   getAllRestaurants() {
-    this.restaurantService.getAllRestaurants().subscribe(
+    this.restaurantService.getAllRestaurants(this.currentPage, this.pageSize).subscribe(
       data => {
-        this.restaurantList = data || [];
+        this.restaurantList = data.restaurantList || [];
+        this.totalPages = data.totalPage;
       }
     )
   }
+
+  goToPage(page: number) {
+    if (page < 0 || page >= this.totalPages) {
+      return;
+    }
+    this.currentPage = page;
+    this.getAllRestaurants();
+  }
+
+  nextPage() {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  prevPage() {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  onPageSizeChange(event: Event) {
+    const newSize = Number((event.target as HTMLSelectElement).value);
+    this.pageSize = newSize;
+    this.currentPage = 0; // reset to first page when page size changes
+    this.getAllRestaurants();
+  }
+
+  // Builds an array [0, 1, 2, ..., totalPages-1] so *ngFor can render page number buttons
+  getPageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
+  }
+
   getRandomNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }

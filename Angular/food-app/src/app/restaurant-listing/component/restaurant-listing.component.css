@@ -1,130 +1,222 @@
-
 .my-gap {
+  margin-top: 20px;
+}
+
+.main-content {
+  position: fixed;
+  top: 70px;
+  /* must match header height exactly */
+  bottom: 0;
+  /* must match pagination bar height exactly */
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  padding: 24px 0 0 0;
+  box-sizing: border-box;
+}
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 0 24px;       /* horizontal padding moved here instead */
+  box-sizing: border-box;
+}
+
+.restaurant-card {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.restaurant-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.restaurant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.restaurant-details {
+  padding: 20px;
+}
+
+.restaurant-name {
+  font-size: 20px;
+  margin: 0;
+}
+
+.restaurant-rating {
+  margin: 10px 0;
+}
+
+.rating {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.star {
+  color: orange;
+}
+
+.order-btn {
+  background-color: #00a7e1;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.order-btn:hover {
+  background-color: #0093c6;
+}
+
+
+.header {
+  background-color: #00A7E1;
+  color: #fff;
+  padding: 20px 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-logo {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.header-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.header-nav li {
+  margin-right: 20px;
+}
+
+.header-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.header-nav a:hover {
+  color: #E7F9FF;
+}
+
+@media only screen and (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-nav {
     margin-top: 20px;
   }
-  .restaurant-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(250px, 1fr));
-    grid-gap: 20px;
+
+  .header-nav ul {
+    display: block;
   }
-  
-  .restaurant-card {
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
+
+  .header-nav li {
+    margin: 10px 0;
   }
-  
-    .restaurant-image {
-      height: 200px;
-      overflow: hidden;
-    }
-  
-    .restaurant-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  
-    .restaurant-details {
-      padding: 20px;
-    }
-  
-    .restaurant-name {
-      font-size: 20px;
-      margin: 0;
-    }
-  
-    .restaurant-rating {
-      margin: 10px 0;
-    }
-  
-    .rating {
-      font-weight: bold;
-      margin-right: 5px;
-    }
-  
-    .star {
-      color: orange;
-    }
-  
-    .order-btn {
-      background-color: #00a7e1;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 10px;
-      transition: background-color 0.3s ease;
-      width: 100%;
-    }
-  
-    .order-btn:hover {
-      background-color: #0093c6;
-    }
-  
-  
-    .header {
-      background-color: #00A7E1;
-      color: #fff;
-      padding: 20px 0;
-    }
-    
-    .header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    
-    .header-logo {
-      font-size: 36px;
-      font-weight: bold;
-      margin: 0;
-    }
-    
-    .header-nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-    }
-    
-    .header-nav li {
-      margin-right: 20px;
-    }
-    
-    .header-nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-    
-    .header-nav a:hover {
-      color: #E7F9FF;
-    }
-    
-    @media only screen and (max-width: 768px) {
-      .header-container {
-        flex-direction: column;
-        text-align: center;
-      }
-    
-      .header-nav {
-        margin-top: 20px;
-      }
-    
-      .header-nav ul {
-        display: block;
-      }
-    
-      .header-nav li {
-        margin: 10px 0;
-      }
-    }
-    
+}
+
+.pagination-container {
+   width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: #4a9bd1;
+  padding: 16px 32px;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;     
+
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+  flex: 1;
+}
+
+.page-size-selector select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+
+.pagination-controls button {
+  padding: 6px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-controls button.active {
+  background-color: #2d7cb8;
+  color: #fff;
+  border-color: #2d7cb8;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #f0f0f0;
+  font-size: 14px;
+  flex: 1;
+  text-align: right;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  /* important — allows flex child to shrink and scroll properly */
+  overflow: hidden;
+}
