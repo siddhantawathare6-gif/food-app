@@ -17,6 +17,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: ALWAYS
+      data-locations: classpath:sql/data.sql
 
 app:
   jwt:

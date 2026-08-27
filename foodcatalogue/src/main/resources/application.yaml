@@ -10,10 +10,15 @@ spring:
   application:
     name: FOOD-CATALOGUE-SERVICE
   datasource:
-    url: jdbc:mysql://localhost:3306/cataloguedb
+    url: jdbc:mysql://localhost:3306/foodcataloguedb
     username: root
     password: system@123
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: ALWAYS
+      data-locations: classpath:sql/data.sql
