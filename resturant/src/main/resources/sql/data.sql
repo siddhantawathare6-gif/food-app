@@ -1,4 +1,4 @@
-INSERT INTO restaurantdb.restaurant (id, address, city, name, restaurant_description) VALUES
+INSERT IGNORE INTO restaurantdb.restaurant (id, address, city, name, restaurant_description) VALUES
 (1, '12 MG Road', 'Pune', 'Ravi Kulkarni', 'Cozy rooftop café known for wood-fired pizzas and craft coffee'),
 (2, '45 Park Street', 'Kolkata', 'Anjali Mehta', 'Family-run Bengali kitchen serving traditional fish curries'),
 (3, '78 Sector 17', 'Chandigarh', 'Karan Verma', 'Modern fusion diner blending Punjabi flavors with continental plating'),
