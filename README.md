@@ -43,14 +43,15 @@ ng version            # Angular CLI 19+
 
 # For macOS users
 brew --version        # Homebrew (for ngrok installation)
+
 Docker Images Used
 
-siddhant9960/fa-eureka-server:0.0.1
-siddhant9960/fa-restaurant-service:0.0.1
-siddhant9960/fa-foodcatalogue-service:0.0.1
-siddhant9960/fa-userinfo-service:0.0.1
-siddhant9960/fa-order-service:0.0.1
-siddhant9960/fa-foodapp-angular:0.0.1
+siddhant9960/fa-eureka-server:0.0.1  
+siddhant9960/fa-restaurant-service:0.0.1  
+siddhant9960/fa-foodcatalogue-service:0.0.1  
+siddhant9960/fa-userinfo-service:0.0.1  
+siddhant9960/fa-order-service:0.0.1  
+siddhant9960/fa-foodapp-angular:0.0.1  
 
 Creating images:
 docker build -t siddhant9960/fa-eureka-server:0.0.1 .  
@@ -58,6 +59,7 @@ docker build -t siddhant9960/fa-userinfo-service:0.0.1 .
 docker build -t siddhant9960/fa-order-service:0.0.1 .  
 docker build -t siddhant9960/fa-foodcatalogue-service:0.0.1 .   
 docker build -t siddhant9960/fa-restaurant-service:0.0.1 .  
+docker build -t siddhant9960/fa-foodapp-angular:0.0.1 .  
 
 🐳 Docker Setup & Configuration
 1. Create Docker Network
