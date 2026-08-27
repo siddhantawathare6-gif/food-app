@@ -68,6 +68,14 @@ docker volume create jenkins-data
 docker volume create sonarqube_data
 docker volume create sonarqube_extensions
 docker volume create sonarqube_logs
+
+Creating images:
+docker build -t siddhant9960/fa-eureka-server:0.0.1 .
+docker build -t siddhant9960/fa-userinfo-service:0.0.1 . 
+docker build -t siddhant9960/fa-order-service:0.0.1 .
+docker build -t siddhant9960/fa-foodcatalogue-service:0.0.1 . 
+docker build -t siddhant9960/fa-restaurant-service:0.0.1 . 
+
 📦 Microservices Deployment
 Step 1: Deploy MySQL Database
 bash
