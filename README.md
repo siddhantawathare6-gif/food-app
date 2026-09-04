@@ -200,29 +200,6 @@ Full Name: Siddhant Awathare
 
 Email: sidawathare6@gmail.com
 
-🔗 GitHub Webhook Setup with ngrok
-Why ngrok?
-GitHub cannot reach localhost:8080 from the internet. ngrok creates a public URL that tunnels to your local Jenkins.
-
-1. Install ngrok
-bash
-# Install via Homebrew (macOS)
-brew install ngrok
-
-# Sign up for free account at ngrok.com and get your auth token
-ngrok config add-authtoken YOUR_AUTH_TOKEN
-2. Start ngrok Tunnel
-bash
-# Create tunnel to Jenkins
-ngrok http 8080
-
-# You'll get a URL like:
-# https://pursuable-chamomile-pester.ngrok-free.dev -> http://localhost:8080
-3. Configure Jenkins URL
-bash
-# Set Jenkins URL to ngrok URL
-# Jenkins → Manage Jenkins → Configure System → Jenkins Location → Jenkins URL
-# Set: https://pursuable-chamomile-pester.ngrok-free.dev/
 4. Configure GitHub Webhook
 Go to your GitHub repository
 
