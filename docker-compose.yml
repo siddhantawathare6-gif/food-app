@@ -43,6 +43,7 @@ services:
       - "8761:8761"
     environment:
       JAVA_OPTS: ""
+      LOGSTASH_HOST: logstash
     networks:
       - food-app-network
     healthcheck:
@@ -152,6 +153,7 @@ services:
     environment:
       JAVA_OPTS: ""
       EUREKA_SERVER_URL: http://eureka:8761/eureka
+      LOGSTASH_HOST: logstash
     depends_on:
       eureka:
         condition: service_healthy
