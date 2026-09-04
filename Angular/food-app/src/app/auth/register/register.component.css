@@ -1,0 +1,132 @@
+/* register.component.css */
+
+.auth-container {
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eaf3fa 0%, #f7f9fb 100%);
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.auth-box {
+  background: #ffffff;
+  padding: 40px 36px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(74, 155, 209, 0.15), 0 2px 8px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 400px;
+  border-top: 4px solid #4a9bd1;
+}
+
+.auth-box h2 {
+  margin-top: 0;
+  margin-bottom: 28px;
+  font-family: Georgia, 'Times New Roman', serif;
+  text-align: center;
+  color: #2c3e50;
+  font-size: 26px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #dfe6ed;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 15px;
+  color: #2c3e50;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4a9bd1;
+  box-shadow: 0 0 0 3px rgba(74, 155, 209, 0.15);
+}
+
+.form-group input::placeholder {
+  color: #b0bac5;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #4a9bd1 0%, #3a8bc1 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(74, 155, 209, 0.3);
+}
+
+.auth-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(74, 155, 209, 0.4);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #fdecea;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin: 4px 0 16px 0;
+  text-align: center;
+}
+
+.success-message {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin: 4px 0 16px 0;
+  text-align: center;
+}
+
+.switch-auth {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: #6b7684;
+}
+
+.switch-auth a {
+  color: #4a9bd1;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.switch-auth a:hover {
+  text-decoration: underline;
+}
