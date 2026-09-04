@@ -138,6 +138,31 @@ services:
       - food-app-network
 
 
+  # ---------- API Gateway ----------
+  api-gateway:
+    image: siddhant9960/fa-api-gateway:0.0.1
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      JAVA_OPTS: ""
+      EUREKA_SERVER_URL: http://eureka:8761/eureka
+    depends_on:
+      eureka:
+        condition: service_healthy
+      user:
+        condition: service_started
+      order:
+        condition: service_started
+      restaurant:
+        condition: service_started
+      foodcatalogue:
+        condition: service_started
+    networks:
+      - food-app-network
+
+
   # ---------- Angular Frontend ----------
   frontend:
     image: siddhant9960/fa-foodapp-angular:0.0.1

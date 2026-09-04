@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/restaurant")
-@CrossOrigin
+//@CrossOrigin (now that the gateway handles it centrally)
 public class RestaurantController {
 
     private final RestaurantService restaurantService;

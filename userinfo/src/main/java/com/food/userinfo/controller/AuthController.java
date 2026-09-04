@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin
+//@CrossOrigin (now that the gateway handles it centrally)
 public class AuthController {
 
     private final AuthService authService;

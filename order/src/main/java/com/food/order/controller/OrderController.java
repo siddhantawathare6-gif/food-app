@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
-@CrossOrigin
+//@CrossOrigin (now that the gateway handles it centrally)
 public class OrderController {
 
     @Autowired

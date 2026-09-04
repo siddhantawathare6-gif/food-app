@@ -7,10 +7,17 @@
 
 // Development URLs (local)
 export const API_URLS = {
-  RESTAURANT_SERVICE: 'http://localhost:9091',
-  ORDER_SERVICE: 'http://localhost:9097',
-  FOOD_CATALOGUE: 'http://localhost:9095',
-  USER_DETAILS: 'http://localhost:9093'
+  // RESTAURANT_SERVICE: 'http://localhost:9091',
+  // ORDER_SERVICE: 'http://localhost:9097',
+  // FOOD_CATALOGUE: 'http://localhost:9095',
+  // USER_DETAILS: 'http://localhost:9093'
+
+  //After adding API-GATEWAY
+  RESTAURANT_SERVICE: 'http://localhost:8080',
+  ORDER_SERVICE: 'http://localhost:8080',
+  FOOD_CATALOGUE: 'http://localhost:8080',
+  USER_DETAILS: 'http://localhost:8080'
+
 };
 
 // Production URLs (Docker/K8s)
@@ -35,15 +42,15 @@ type ApiUrls = typeof API_URLS;
 // Environment-based selection
 export const getApiUrls = (): ApiUrls => {
   const hostname = window.location.hostname;
-  
+
   if (hostname.includes('k8s') || hostname.includes('kubernetes')) {
     return K8S_API_URLS;
   }
-  
+
   if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
     return API_URLS_PROD;
   }
-  
+
   return API_URLS;
 };
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/foodCatalogue")
-@CrossOrigin
+//@CrossOrigin (now that the gateway handles it centrally)
 public class FoodCatalogueController {
 
 
