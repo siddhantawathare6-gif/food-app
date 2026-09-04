@@ -64,6 +64,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-foodapp-db:3306/userdb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: system@123
+      LOGSTASH_HOST: logstash
     depends_on:
       eureka:
         condition: service_healthy
@@ -83,6 +84,7 @@ services:
       JAVA_OPTS: ""
       EUREKA_SERVER_URL: http://eureka:8761/eureka
       MONGODB_URI: mongodb://mongo-db:27017/order_db
+      LOGSTASH_HOST: logstash
     depends_on:
       eureka:
         condition: service_healthy
@@ -106,6 +108,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-foodapp-db:3306/restaurantdb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: system@123
+      LOGSTASH_HOST: logstash
     depends_on:
       eureka:
         condition: service_healthy
@@ -127,6 +130,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-foodapp-db:3306/foodcataloguedb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: system@123
+      LOGSTASH_HOST: logstash
     depends_on:
       eureka:
         condition: service_healthy
@@ -159,6 +163,50 @@ services:
         condition: service_started
       foodcatalogue:
         condition: service_started
+    networks:
+      - food-app-network
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - food-app-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - food-app-network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.13.4
+    container_name: logstash
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "5000:5000"
+    depends_on:
+      - elasticsearch
+    networks:
+      - food-app-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
     networks:
       - food-app-network
 
