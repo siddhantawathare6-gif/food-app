@@ -1,2 +1,2 @@
-INSERT IGNORE INTO userdb.user (id, name, username, email, password) VALUES
-(1,'siddhant','siddhant','sid@gmail.com','sid123@sid');
+INSERT IGNORE INTO userdb.role (id, name) VALUES
+(1,'ROLE_USER');
