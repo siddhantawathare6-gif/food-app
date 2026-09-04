@@ -1,11 +1,13 @@
 package com.food.userinfo.service.impl;
 
+import com.food.userinfo.dto.JwtAuthResponse;
 import com.food.userinfo.dto.LoginDTO;
 import com.food.userinfo.dto.RegisterDTO;
 import com.food.userinfo.dto.UserDTO;
 import com.food.userinfo.entity.Role;
 import com.food.userinfo.entity.User;
 import com.food.userinfo.exception.UserAlreadyRegisterException;
+import com.food.userinfo.exception.UserinfoApiException;
 import com.food.userinfo.repository.RoleRepository;
 import com.food.userinfo.repository.UserRepository;
 import com.food.userinfo.service.AuthService;
@@ -40,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(LoginDTO login) {
+    public JwtAuthResponse login(LoginDTO login) {
 
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getEmailOrUsername(),
                 login.getPassword()));
@@ -49,7 +51,16 @@ public class AuthServiceImpl implements AuthService {
         UserDetails principal = (UserDetails) authenticate.getPrincipal();
         String token = jwtUtils.generatToken(principal);
         //return "user successfully logged in...";
-        return token;
+
+        // Fetch the actual User entity to get the ID
+        User user = userRepository.findByUsername(principal.getUsername())
+                .orElseGet(() -> userRepository.findByEmail(principal.getUsername())
+                        .orElseThrow(() -> new UserinfoApiException(HttpStatus.NOT_FOUND, "User not found")));
+
+        JwtAuthResponse response = new JwtAuthResponse();
+        response.setAccessToken(token);
+        response.setUserId(user.getId());
+        return response;
     }
 
     @Override

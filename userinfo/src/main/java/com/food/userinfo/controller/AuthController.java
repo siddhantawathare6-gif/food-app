@@ -6,13 +6,11 @@ import com.food.userinfo.dto.RegisterDTO;
 import com.food.userinfo.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin
 public class AuthController {
 
     private final AuthService authService;
@@ -23,10 +21,7 @@ public class AuthController {
 
     @PostMapping(value = {"/login", "/signin"})
     public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO login) {
-        String response = authService.login(login);
-        JwtAuthResponse jwtAuthResponse=new JwtAuthResponse();
-        jwtAuthResponse.setAccessToken(response);
-        return ResponseEntity.ok(jwtAuthResponse);
+        return ResponseEntity.ok(authService.login(login));
     }
 
     @PostMapping(value = {"/register", "/signup"})

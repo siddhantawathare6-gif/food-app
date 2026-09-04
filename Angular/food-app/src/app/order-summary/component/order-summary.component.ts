@@ -3,6 +3,7 @@ import { OrderDTO } from '../model/OrderDTO';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../service/order.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../auth/service/AuthService';
 
 @Component({
   selector: 'app-order-summary',
@@ -13,12 +14,15 @@ import { CommonModule } from '@angular/common';
 export class OrderSummaryComponent {
 
 
-  orderSummary?: OrderDTO;
+  orderSummary!: OrderDTO;
   obj: OrderDTO;
   total?: number = 0;
   showDialog = false;
 
-  constructor(private route: ActivatedRoute, private orderService: OrderService, private router: Router) { }
+  constructor(private route: ActivatedRoute,
+    private orderService: OrderService,
+    private router: Router,
+    private authService: AuthService) { }
 
   ngOnInit() {
     const data = this.route.snapshot.queryParams['data'];
@@ -56,6 +60,16 @@ export class OrderSummaryComponent {
   }
 
   saveOrder() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/register'], {
+        queryParams: {
+          returnUrl: '/orderSummary',
+          data: JSON.stringify(this.orderSummary)
+        }
+      });
+      return;
+    }
+    this.orderSummary.userId = this.authService.getUserId()!;
     this.orderService.saveOrder(this.orderSummary)
       .subscribe(
         response => {

@@ -4,8 +4,10 @@
       <nav class="header-nav">
         <div class="user-avatar">
             <img src="assets/avatar-pics/avatar.jpg" alt="User Avatar">
-            <span class="username">Hey {{ username }}</span>
-          </div>
+            <span class="username" *ngIf="username">Hey {{ username }}</span>
+            <span class="username" *ngIf="!username">Hey User</span>
+            <button class="logout-btn" *ngIf="username" (click)="logout()">Logout</button>
+        </div>
       </nav>
     </div>
-  </header>
+</header>
