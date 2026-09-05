@@ -672,7 +672,8 @@ Step 3 — Add the ELK containers to docker-compose.yml
       - food-app-network
 
   Step 4 — Create the Logstash pipeline config
-  # logstash/logstash.conf
+  
+# logstash/logstash.conf
 input {
   tcp {
     port => 5000
@@ -692,3 +693,5 @@ Step 5 — Add LOGSTASH_HOST env var to each service in docker-compose.yml
     environment:
       # ...existing env vars
       LOGSTASH_HOST: logstash
+
+Open Kibana at http://localhost:5601 → go to Stack Management → Index Patterns → create a pattern matching microservices-logs-* → then go to Discover to see logs streaming in from all services in one place, filterable by service field
