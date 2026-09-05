@@ -44,6 +44,10 @@ services:
     environment:
       JAVA_OPTS: ""
       LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+    depends_on:
+      - logstash
+      - zipkin
     networks:
       - food-app-network
     healthcheck:
@@ -66,6 +70,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: system@123
       LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      # JWT_SECRET: ${JWT_SECRET}
     depends_on:
       eureka:
         condition: service_healthy
@@ -86,12 +92,15 @@ services:
       EUREKA_SERVER_URL: http://eureka:8761/eureka
       MONGODB_URI: mongodb://mongo-db:27017/order_db
       LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
     depends_on:
       eureka:
         condition: service_healthy
       mongo:
         condition: service_started
       user:
+        condition: service_started
+      logstash:
         condition: service_started
     networks:
       - food-app-network
@@ -110,11 +119,14 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: system@123
       LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
     depends_on:
       eureka:
         condition: service_healthy
       mysql:
         condition: service_healthy
+      logstash:
+        condition: service_started
     networks:
       - food-app-network
 
@@ -132,12 +144,15 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: system@123
       LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
     depends_on:
       eureka:
         condition: service_healthy
       mysql:
         condition: service_healthy
       restaurant:
+        condition: service_started
+      logstash:
         condition: service_started
     networks:
       - food-app-network
@@ -154,6 +169,9 @@ services:
       JAVA_OPTS: ""
       EUREKA_SERVER_URL: http://eureka:8761/eureka
       LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      REDIS_HOST: redis
+      # JWT_SECRET: ${JWT_SECRET}
     depends_on:
       eureka:
         condition: service_healthy
@@ -165,50 +183,84 @@ services:
         condition: service_started
       foodcatalogue:
         condition: service_started
+      redis:
+        condition: service_healthy
+      logstash:
+        condition: service_started
     networks:
       - food-app-network
 
+  # ---------- Observability: Zipkin (distributed tracing) ----------
   zipkin:
     image: openzipkin/zipkin:latest
     container_name: zipkin
+    restart: unless-stopped
     ports:
       - "9411:9411"
     networks:
       - food-app-network
 
+  # ---------- Observability: Elasticsearch (log storage) ----------
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elasticsearch
+    restart: unless-stopped
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
     networks:
       - food-app-network
 
+  # ---------- Observability: Logstash (log ingestion pipeline) ----------
   logstash:
     image: docker.elastic.co/logstash/logstash:8.13.4
     container_name: logstash
+    restart: unless-stopped
     volumes:
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     ports:
       - "5000:5000"
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     networks:
       - food-app-network
 
+  # ---------- Observability: Kibana (log visualization UI) ----------
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.4
     container_name: kibana
+    restart: unless-stopped
     ports:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - food-app-network
+
+  # ---------- Infra: Redis (rate limiting) ----------
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - food-app-network
 
@@ -226,6 +278,7 @@ services:
       - order
       - restaurant
       - foodcatalogue
+      - api-gateway
     networks:
       - food-app-network
 

@@ -34,3 +34,9 @@ spring:
     mongodb:
       repositories:
         type: imperative
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,loggers

@@ -22,3 +22,9 @@ spring:
     init:
       mode: ALWAYS
       data-locations: classpath:sql/data.sql
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,loggers

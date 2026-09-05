@@ -25,7 +25,7 @@ spring:
 
 app:
   jwt:
-    secret: 9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2 #(siddhant@123)
+    secret: ${JWT_SECRET:9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2} #(siddhant@123)
     expiration: 86400000  # 24 hours
 
 # Logging Configuration
@@ -38,3 +38,9 @@ logging:
     org.hibernate: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,loggers
