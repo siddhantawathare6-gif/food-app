@@ -39,7 +39,7 @@ public class RestaurantController {
 
     @PostMapping("/addRestaurant")
     public ResponseEntity<RestaurantDTO> saveRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
-        log.info("🚀 POST /restaurant/addRestaurant - Creating new restaurant: name='{}', city='{}'", restaurantDTO.getName(), restaurantDTO.getCity());
+        log.info("POST /restaurant/addRestaurant - Creating new restaurant: name='{}', city='{}'", restaurantDTO.getName(), restaurantDTO.getCity());
 
         RestaurantDTO restaurant = restaurantService.addRestaurant(restaurantDTO);
 
@@ -54,7 +54,7 @@ public class RestaurantController {
 
         RestaurantDTO restaurant = restaurantService.fetchRestaurantById(id);
 
-        log.info("✅ GET /restaurant/fetchById/{} - Success: Found restaurant '{}' in city '{}'", id, restaurant.getName(), restaurant.getCity());
+        log.info("GET /restaurant/fetchById/{} - Success: Found restaurant '{}' in city '{}'", id, restaurant.getName(), restaurant.getCity());
 
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }

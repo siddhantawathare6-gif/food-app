@@ -61,7 +61,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantPageDto.setTotalElement(pageRestaurant.getTotalElements());
         restaurantPageDto.setLast(pageRestaurant.isLast());
 
-        log.info("✅ Successfully fetched {} restaurants (page {}/{}), total: {}", restaurantDTOS.size(), pageRestaurant.getNumber() + 1,
+        log.info("Successfully fetched {} restaurants (page {}/{}), total: {}", restaurantDTOS.size(), pageRestaurant.getNumber() + 1,
                 pageRestaurant.getTotalPages(), pageRestaurant.getTotalElements());
 
         return restaurantPageDto;
@@ -70,7 +70,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public RestaurantDTO addRestaurant(RestaurantDTO restaurantDTO) {
 
-        log.info("📝 Adding new restaurant - name='{}', city='{}'", restaurantDTO.getName(), restaurantDTO.getCity());
+        log.info("Adding new restaurant - name='{}', city='{}'", restaurantDTO.getName(), restaurantDTO.getCity());
 
         // Log full DTO at DEBUG level (mask sensitive data if any)
         log.debug("RestaurantDTO received: {}", restaurantDTO);
@@ -84,7 +84,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 
         RestaurantDTO savedDTO = RestaurantMapper.INSTANCE.mapRestaurantToRestaurantDTO(saveRestaurant);
-        log.info("✅ Restaurant created successfully - id={}, name='{}', city='{}'", savedDTO.getId(), savedDTO.getName(), savedDTO.getCity());
+        log.info("Restaurant created successfully - id={}, name='{}', city='{}'", savedDTO.getId(), savedDTO.getName(), savedDTO.getCity());
 
         return savedDTO;
     }
@@ -97,7 +97,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         log.debug("Querying database for restaurant ID: {}", id);
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(
                 () -> {
-                    log.warn("⚠️ Restaurant not found with ID: {}", id);
+                    log.warn("Restaurant not found with ID: {}", id);
                     return new RestaurantNotFoundException("Restaurant not found with id: " + id);
                 });
 

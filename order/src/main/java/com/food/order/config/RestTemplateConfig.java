@@ -1,6 +1,6 @@
-package com.food.foodcatalogue.config;
+package com.food.order.config;
 
-import com.food.foodcatalogue.filter.CorrelationIdRestTemplateInterceptor;
+import com.food.order.filter.CorrelationIdRestTemplateInterceptor;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,14 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Configuration
-public class AppConfig {
-
-//    @Bean
-//    @LoadBalanced
-//    public RestTemplate restTemplate() {
-//        return new RestTemplate();
-//    }
-
+public class RestTemplateConfig {
 
     @Bean
     @LoadBalanced

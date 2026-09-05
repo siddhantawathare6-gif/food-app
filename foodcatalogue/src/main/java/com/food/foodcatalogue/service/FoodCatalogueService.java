@@ -28,7 +28,7 @@ public class FoodCatalogueService {
 
     public FoodItemDTO addFoodItem(FoodItemDTO foodItemDTO) {
 
-        log.info("📝 Adding new food item - name: '{}', price: {}, restaurantId: {}",
+        log.info("Adding new food item - name: '{}', price: {}, restaurantId: {}",
                 foodItemDTO.getItemName(),
                 foodItemDTO.getPrice(),
                 foodItemDTO.getRestaurantId());
@@ -36,7 +36,7 @@ public class FoodCatalogueService {
         log.debug("Full food item DTO: {}", foodItemDTO);
         FoodItem foodItemSavedInDB = foodItemRepo.save(FoodItemMapper.INSTANCE.mapFoodItemDTOToFoodItem(foodItemDTO));
 
-        log.info("✅ Food item added successfully - id: {}, name: '{}', price: {}, restaurantId: {}",
+        log.info("Food item added successfully - id: {}, name: '{}', price: {}, restaurantId: {}",
                 foodItemSavedInDB.getId(),
                 foodItemSavedInDB.getItemName(),
                 foodItemSavedInDB.getPrice(),
@@ -54,13 +54,13 @@ public class FoodCatalogueService {
         Restaurant restaurant = fetchRestaurantDetailsFromRestaurantMS(restaurantId);
 
         if (restaurant != null) {
-            log.info("✅ Restaurant details fetched successfully - id: {}, name: '{}', city: '{}'",
+            log.info("Restaurant details fetched successfully - id: {}, name: '{}', city: '{}'",
                     restaurant.getId(),
                     restaurant.getName(),
                     restaurant.getCity());
             log.debug("Full restaurant details: {}", restaurant);
         } else {
-            log.warn("⚠️ Restaurant not found for ID: {}", restaurantId);
+            log.warn("Restaurant not found for ID: {}", restaurantId);
             throw new RuntimeException("Restaurant not found with ID: " + restaurantId);
         }
 

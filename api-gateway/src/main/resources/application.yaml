@@ -17,7 +17,7 @@ spring:
             - id: userinfo-service
               uri: lb://USER-SERVICE
               predicates:
-                - Path=/api/auth/**
+                - Path=/api/auth/**,/user/**
             - id: foodcatalogue-service
               uri: lb://FOOD-CATALOGUE-SERVICE
               predicates:

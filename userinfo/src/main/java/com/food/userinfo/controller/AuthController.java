@@ -26,7 +26,7 @@ public class AuthController {
 
     @PostMapping(value = {"/login", "/signin"})
     public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO login) {
-        log.info("🔐 Login attempt for user: {}", maskEmailOrUsername(login.getEmailOrUsername()));
+        log.info("Login attempt for user: {}", maskEmailOrUsername(login.getEmailOrUsername()));
 
         // Log full login request at DEBUG level (without password)
         log.debug("Login request - emailOrUsername: {}, password: [PROTECTED]",
@@ -36,7 +36,7 @@ public class AuthController {
         JwtAuthResponse response = authService.login(login);
 
         // Log success (mask sensitive data)
-        log.info("✅ Login successful for user: {}", maskEmailOrUsername(login.getEmailOrUsername()));
+        log.info("Login successful for user: {}", maskEmailOrUsername(login.getEmailOrUsername()));
 
         // Log token details at DEBUG level (only first few chars)
         if (response != null && response.getAccessToken() != null) {
@@ -51,37 +51,38 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody RegisterDTO register) {
 
         // Log registration attempt
-        log.info("📝 Registration attempt for user: {}, email: {}", register.getUsername(), maskEmail(register.getEmail()));
+        log.info("Registration attempt for user: {}, email: {}", register.getUsername(), maskEmail(register.getEmail()));
 
         // Log full registration request at DEBUG level (without password)
         log.debug("Registration request - username: {}, email: {}, role: [PROTECTED]", register.getUsername(), register.getEmail());
 
         if (register.getUsername() == null || register.getUsername().trim().isEmpty()) {
-            log.warn("⚠️ Registration validation failed: username is null or empty");
+            log.warn("Registration validation failed: username is null or empty");
             throw new IllegalArgumentException("Username is required");
         }
 
         if (register.getEmail() == null || register.getEmail().trim().isEmpty()) {
-            log.warn("⚠️ Registration validation failed: email is null or empty for user: {}", register.getUsername());
+            log.warn("Registration validation failed: email is null or empty for user: {}", register.getUsername());
             throw new IllegalArgumentException("Email is required");
         }
 
         if (register.getPassword() == null || register.getPassword().trim().isEmpty()) {
-            log.warn("⚠️ Registration validation failed: password is null or empty for user: {}",
+            log.warn("Registration validation failed: password is null or empty for user: {}",
                     register.getUsername());
             throw new IllegalArgumentException("Password is required");
         }
 
         // Validate email format (basic check)
         if (!isValidEmail(register.getEmail())) {
-            log.warn("⚠️ Registration validation failed: invalid email format for user: {}",
+            log.warn("Registration validation failed: invalid email format for user: {}",
                     register.getUsername());
             throw new IllegalArgumentException("Invalid email format");
         }
 
         String response = authService.register(register);
 
-        log.info("✅ Registration successful for user: {}, email: {}", register.getUsername(), maskEmail(register.getEmail()));
+        log.info("Registration successful for user: {}, email: {}", register.getUsername(),
+                maskEmail(register.getEmail()));
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

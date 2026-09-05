@@ -29,14 +29,14 @@ public class OrderService {
 
     public OrderDTO saveOrderInDb(OrderDTOFromFE orderDetails) {
 
-        log.info("📦 Processing order save for userId: {}, restaurantId: {}", orderDetails.getUserId(), orderDetails.getRestaurant());
+        log.info("Processing order save for userId: {}, restaurantId: {}", orderDetails.getUserId(), orderDetails.getRestaurant());
 
         Integer newOrderID = sequenceGenerator.generateNextOrderId();
         UserDTO userDTO = fetchUserDetailsFromUserId(orderDetails.getUserId());
         Order orderToBeSaved = new Order(newOrderID, orderDetails.getFoodItemsList(), orderDetails.getRestaurant(), userDTO);
 
         Order savedOrder = orderRepo.save(orderToBeSaved);
-        log.info("✅ Order saved to database - orderId: {}", savedOrder.getOrderId());
+        log.info("Order saved to database - orderId: {}", savedOrder.getOrderId());
 
         return OrderMapper.INSTANCE.mapOrderToOrderDTO(orderToBeSaved);
     }

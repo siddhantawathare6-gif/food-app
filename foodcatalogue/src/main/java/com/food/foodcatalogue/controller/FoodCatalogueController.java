@@ -37,7 +37,7 @@ public class FoodCatalogueController {
         // Log full request at DEBUG level
         log.debug("Full food item request: {}", foodItemDTO);
         FoodItemDTO foodItemSaved = foodCatalogueService.addFoodItem(foodItemDTO);
-        log.info("✅ Food item created successfully - id: {}, name: '{}', restaurantId: {}, price: {}",
+        log.info("Food item created successfully - id: {}, name: '{}', restaurantId: {}, price: {}",
                 foodItemSaved.getId(),
                 foodItemSaved.getItemName(),
                 foodItemSaved.getRestaurantId(),
@@ -48,7 +48,7 @@ public class FoodCatalogueController {
     @GetMapping("/fetchRestaurantAndFoodItemsById/{restaurantId}")
     public ResponseEntity<FoodCataloguePage> fetchRestauDetailsWithFoodMenu(@PathVariable Integer restaurantId){
 
-        log.info("🔍 GET /foodCatalogue/fetchRestaurantAndFoodItemsById/{} -",
+        log.info("GET /foodCatalogue/fetchRestaurantAndFoodItemsById/{} -",
                 restaurantId);
 
         FoodCataloguePage foodCataloguePage = foodCatalogueService.fetchFoodCataloguePageDetails(restaurantId);

@@ -27,7 +27,7 @@ public class OrderController {
 
         OrderDTO orderSavedInDB = orderService.saveOrderInDb(orderDetails);
 
-        log.info("✅ Order created successfully - orderId: {}, restaurant: {}, foodItemsList: {}", orderSavedInDB.getOrderId(), orderSavedInDB.getRestaurant(), orderSavedInDB.getFoodItemsList());
+        log.info("Order created successfully - orderId: {}, restaurant: {}, foodItemsList: {}", orderSavedInDB.getOrderId(), orderSavedInDB.getRestaurant(), orderSavedInDB.getFoodItemsList());
 
         return new ResponseEntity<>(orderSavedInDB, HttpStatus.CREATED);
     }

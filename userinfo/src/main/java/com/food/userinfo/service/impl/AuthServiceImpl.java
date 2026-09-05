@@ -95,13 +95,13 @@ public class AuthServiceImpl implements AuthService {
 
         log.debug("Checking if email exists: {}", maskEmail(registerDTO.getEmail()));
         if (userRepository.existsByEmail(registerDTO.getEmail())) {
-            log.warn("⚠️ Registration failed: Email already exists: {}", maskEmail(registerDTO.getEmail()));
+            log.warn("Registration failed: Email already exists: {}", maskEmail(registerDTO.getEmail()));
             throw new UserAlreadyRegisterException(HttpStatus.BAD_REQUEST, "email already exists!.");
         }
 
         log.debug("Checking if username exists: {}", registerDTO.getUsername());
         if (userRepository.existsByUsername(registerDTO.getUsername())) {
-            log.warn("⚠️ Registration failed: Username already exists: {}", registerDTO.getUsername());
+            log.warn("Registration failed: Username already exists: {}", registerDTO.getUsername());
             throw new UserAlreadyRegisterException(HttpStatus.BAD_REQUEST, "Username already exists!.");
         }
 
@@ -119,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser =userRepository.save(user);
 
-        log.info("✅ Registration successful for user: {} (ID: {})", savedUser.getUsername(), savedUser.getId());
+        log.info("Registration successful for user: {} (ID: {})", savedUser.getUsername(), savedUser.getId());
 
         return "user register successfully";
     }
