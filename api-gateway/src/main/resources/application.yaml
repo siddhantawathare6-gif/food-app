@@ -18,18 +18,47 @@ spring:
               uri: lb://USER-SERVICE
               predicates:
                 - Path=/api/auth/**,/user/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 5
             - id: foodcatalogue-service
               uri: lb://FOOD-CATALOGUE-SERVICE
               predicates:
                 - Path=/foodCatalogue/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
             - id: restaurant-service
               uri: lb://RESTAURANT-SERVICE
               predicates:
                 - Path=/restaurant/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
             - id: order-service
               uri: lb://ORDER-SERVICE
               predicates:
                 - Path=/order/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 5
+                    redis-rate-limiter.burstCapacity: 10
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
 
 eureka:
   client:
@@ -44,3 +73,8 @@ management:
   endpoint:
     gateway:
       enabled: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2} #(siddhant@123)
+    expiration: 86400000  # 24 hours
