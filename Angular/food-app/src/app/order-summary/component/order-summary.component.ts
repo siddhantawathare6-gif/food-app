@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../service/order.service';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/service/AuthService';
+import { HttpErrorResponse } from '@angular/common/http';
+import { extractErrorMessage } from '../../shared/util/error-utils';
 
 @Component({
   selector: 'app-order-summary',
@@ -18,6 +20,7 @@ export class OrderSummaryComponent {
   obj: OrderDTO;
   total?: number = 0;
   showDialog = false;
+  errorMessage: string | null = null;
 
   constructor(private route: ActivatedRoute,
     private orderService: OrderService,
@@ -60,6 +63,7 @@ export class OrderSummaryComponent {
   }
 
   saveOrder() {
+    this.errorMessage = null;
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/register'], {
         queryParams: {
@@ -71,14 +75,15 @@ export class OrderSummaryComponent {
     }
     this.orderSummary.userId = this.authService.getUserId()!;
     this.orderService.saveOrder(this.orderSummary)
-      .subscribe(
-        response => {
+      .subscribe({
+        next: (response) => {
           this.showDialog = true;
         },
-        error => {
-          console.error('Failed to save data:', error);
+        error: (err: HttpErrorResponse) => {
+          this.errorMessage = extractErrorMessage(err, 'Failed to place your order. Please try again.');
+          console.error('Failed to save order:', err);
         }
-      );
+      });
   }
 
   closeDialog() {

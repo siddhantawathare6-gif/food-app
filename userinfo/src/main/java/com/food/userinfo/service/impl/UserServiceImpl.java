@@ -2,6 +2,7 @@ package com.food.userinfo.service.impl;
 
 import com.food.userinfo.dto.UserDTO;
 import com.food.userinfo.entity.User;
+import com.food.userinfo.exception.UserinfoApiException;
 import com.food.userinfo.mapper.UserMapper;
 import com.food.userinfo.repository.UserRepository;
 import com.food.userinfo.service.UserService;
@@ -42,15 +43,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserDTO> fetchUserDetailsById(Long userId) {
+    public UserDTO fetchUserDetailsById(Long userId) {
         log.info("Starting fetchUserDetailsById for userId: {}", userId);
 
-        Optional<User> fetchedUser = userRepository.findById(userId);
-        if (fetchedUser.isPresent()) {
-            log.info("User found successfully for userId: {}", userId);
-            return new ResponseEntity<>(UserMapper.INSTANCE.mapUserToUserDTO(fetchedUser.get()), HttpStatus.OK);
-        }
-        log.warn("User not found for userId: {}", userId);
-        return new ResponseEntity<>((HttpHeaders) null, HttpStatus.NOT_FOUND);
+        User fetchedUser = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.warn("User not found for userId: {}", userId);
+                    return new UserinfoApiException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
+                });
+
+        log.info("User found successfully for userId: {}", userId);
+        return UserMapper.INSTANCE.mapUserToUserDTO(fetchedUser);
     }
 }

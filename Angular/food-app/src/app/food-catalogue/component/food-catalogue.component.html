@@ -1,5 +1,10 @@
 
 <div class="restaurant-details">
+
+    <div class="error-banner" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
     <div class="restaurant-header">
         <h1>{{foodItemResponse.restaurant?.name || 'Restaurant'}}</h1>
         <button class="checkout-button" (click)="onCheckOut()">

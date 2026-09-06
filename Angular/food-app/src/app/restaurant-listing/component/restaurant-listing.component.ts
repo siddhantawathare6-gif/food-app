@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { RestaurantService } from '../service/restaurant.service';
 import { Restaurant } from '../../shared/model/Restaurant';
 import { CommonModule, NgIf } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { extractErrorMessage } from '../../shared/util/error-utils';
 
 @Component({
   selector: 'app-restaurant-listing',
@@ -18,6 +20,7 @@ export class RestaurantListingComponent {
   public currentPage: number = 0;
   public pageSize: number = 4;
   public pageSizeOptions: number[] = [4, 8, 12, 16];
+  public errorMessage: string | null = null;
 
   ngOnInit() {
     this.getAllRestaurants();
@@ -26,12 +29,17 @@ export class RestaurantListingComponent {
   constructor(private router: Router, private restaurantService: RestaurantService) { }
 
   getAllRestaurants() {
-    this.restaurantService.getAllRestaurants(this.currentPage, this.pageSize).subscribe(
-      data => {
+    this.errorMessage = null;
+    this.restaurantService.getAllRestaurants(this.currentPage, this.pageSize).subscribe({
+      next: data => {
         this.restaurantList = data.restaurantList || [];
         this.totalPages = data.totalPage;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage = extractErrorMessage(err, 'Unable to load restaurants. Please try again later.');
+        console.error('Failed to fetch restaurants:', err);
       }
-    )
+    });
   }
 
   goToPage(page: number) {

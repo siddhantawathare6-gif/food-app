@@ -35,10 +35,10 @@ public class UserController {
     @GetMapping("/fetchUserById/{userId}")
     public ResponseEntity<UserDTO> fetchUserDetailsById(@PathVariable Long userId) {
         log.info("Received request to fetch user details for userId: {}", userId);
-        ResponseEntity<UserDTO> response = userService.fetchUserDetailsById(userId);
+        UserDTO response = userService.fetchUserDetailsById(userId);
         log.info("Successfully fetched user details for userId: {}", userId);
 
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -1,10 +1,12 @@
 package com.food.foodcatalogue.service;
 
 import com.food.foodcatalogue.dto.Restaurant;
+import com.food.foodcatalogue.exception.FoodCatalogueServiceException;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +25,8 @@ public class RestaurantService {
 
     private Restaurant fetchRestaurantFallback(Integer restaurantId, Exception ex) {
         log.error("All retries exhausted fetching restaurant {}: {}", restaurantId, ex.getMessage());
-        throw new RuntimeException("Restaurant service is currently unavailable.");
+        throw new FoodCatalogueServiceException(HttpStatus.SERVICE_UNAVAILABLE, "Restaurant service is currently " +
+                "unavailable. Please try again shortly.");
     }
 
 }

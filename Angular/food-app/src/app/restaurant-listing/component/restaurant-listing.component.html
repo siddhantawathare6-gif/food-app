@@ -1,4 +1,9 @@
 <main class="main-content my-gap">
+
+  <div class="error-banner" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
   <div class="restaurant-grid">
     <div class="restaurant-card" *ngFor="let restaurant of restaurantList">
       <div class="restaurant-image">

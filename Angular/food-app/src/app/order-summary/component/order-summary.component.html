@@ -1,4 +1,9 @@
 <div class="order-summary">
+
+   <div class="error-banner" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
     <h1>Order Summary</h1>
     <table>
       <thead>

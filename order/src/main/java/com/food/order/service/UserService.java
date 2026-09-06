@@ -1,10 +1,12 @@
 package com.food.order.service;
 
 import com.food.order.dto.UserDTO;
+import com.food.order.exception.OrderServiceException;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,6 +33,7 @@ public class UserService {
 
     private UserDTO fetchUserDetailsFallback(Integer userId, Exception ex) {
         log.error("All retries exhausted fetching user {}: {}", userId, ex.getMessage());
-        throw new RuntimeException("User service is currently unavailable. Please try again shortly.");
+        throw new OrderServiceException(HttpStatus.SERVICE_UNAVAILABLE, "User service is currently unavailable. Please" +
+                " try again shortly.");
     }
 }

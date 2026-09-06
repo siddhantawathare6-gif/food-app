@@ -25,15 +25,15 @@ export class FoodItemService {
         //     catchError(this.handleError)
         //   );
 
-        return this.http.get<any>(`${this.baseUrl}/foodCatalogue/fetchRestaurantAndFoodItemsById/${id}`)
-          .pipe(
-            catchError(this.handleError)
-          );
+        return this.http.get<FoodCataloguePage>(`${this.baseUrl}/foodCatalogue/fetchRestaurantAndFoodItemsById/${id}`);
+          // .pipe(
+          //   catchError(this.handleError)
+          // );
       }
     
-      private handleError(error: any) {
-        console.error('An error occurred:', error);
-        return throwError(error.message || error);
-      }
+      // private handleError(error: any) {
+      //   console.error('An error occurred:', error);
+      //   return throwError(error.message || error);
+      // }
 
 }

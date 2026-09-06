@@ -4,6 +4,8 @@ import { FoodItem } from '../../shared/model/FoodItem';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FoodItemService } from '../service/fooditem.service';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { extractErrorMessage } from '../../shared/util/error-utils';
 
 @Component({
   selector: 'app-food-catalogue',
@@ -17,7 +19,8 @@ export class FoodCatalogueComponent {
   restaurantId!: number;
   foodItemResponse!: FoodCataloguePage;
   foodItemCart: FoodItem[] = [];
-  orderSummary: FoodCataloguePage ;
+  orderSummary: FoodCataloguePage;
+  errorMessage: string | null = null;
 
 
   constructor(private route: ActivatedRoute, private foodItemService: FoodItemService, private router: Router) {
@@ -51,8 +54,9 @@ export class FoodCatalogueComponent {
   }
 
   getFoodItemsByRestaurant(restaurant: number) {
-    this.foodItemService.getFoodItemsByRestaurant(restaurant).subscribe(
-      data => {
+    this.errorMessage = null;
+    this.foodItemService.getFoodItemsByRestaurant(restaurant).subscribe({
+      next: data => {
         console.log('Food Catalogue API Response:', data);
 
         this.foodItemResponse = data;
@@ -61,8 +65,12 @@ export class FoodCatalogueComponent {
           .filter(food => food.quantity > 0);
         console.log('Food Items:', data.foodItemsList);
         console.log('Initial Cart:', this.foodItemCart);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage = extractErrorMessage(err, 'Unable to load the menu for this restaurant. Please try again later.');
+        console.error('Failed to fetch food catalogue:', err);
       }
-    )
+    });
   }
 
   increment(food: FoodItem) {

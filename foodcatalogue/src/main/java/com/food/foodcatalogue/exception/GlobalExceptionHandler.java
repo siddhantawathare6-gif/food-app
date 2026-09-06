@@ -1,11 +1,10 @@
-package com.food.userinfo.exception;
+package com.food.foodcatalogue.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -19,25 +18,10 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorDetails> handleAccessDeniedException(AccessDeniedException exception,
-                                                                    WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
-                webRequest.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(UserAlreadyRegisterException.class)
-    public ResponseEntity<ErrorDetails> handleUserAlreadyRegisterException(UserAlreadyRegisterException exception,
-                                                                           WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
-                webRequest.getDescription(false));
-        return new ResponseEntity<>(errorDetails, exception.getStatus());
-    }
-
-    @ExceptionHandler(UserinfoApiException.class)
-    public ResponseEntity<ErrorDetails> handleUserinfoApiException(UserinfoApiException exception,
-                                                                   WebRequest webRequest) {
+    @ExceptionHandler(FoodCatalogueServiceException.class)
+    public ResponseEntity<ErrorDetails> handleFoodCatalogueServiceException(FoodCatalogueServiceException exception,
+                                                                            WebRequest webRequest) {
+        log.warn("FoodCatalogueServiceException: {}", exception.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
                 webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, exception.getStatus());
@@ -73,10 +57,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception,
                                                               WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
+        log.error("Unhandled exception occurred", exception);
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), "An unexpected error occurred. Please try again later.",
                 webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }

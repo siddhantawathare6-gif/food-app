@@ -113,11 +113,15 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
         Set<Role> roles = new HashSet<>();
-        Role roleUser = roleRepository.findByName("ROLE_USER").get();
+        Role roleUser = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> {
+                    log.error("ROLE_USER not found in database - check role seeding");
+                    return new UserinfoApiException(HttpStatus.INTERNAL_SERVER_ERROR, "System configuration error. Please contact support.");
+                });
         roles.add(roleUser);
         user.setRoles(roles);
 
-        User savedUser =userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         log.info("Registration successful for user: {} (ID: {})", savedUser.getUsername(), savedUser.getId());
 

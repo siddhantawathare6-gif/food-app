@@ -4,11 +4,13 @@ import com.food.foodcatalogue.dto.FoodCataloguePage;
 import com.food.foodcatalogue.dto.FoodItemDTO;
 import com.food.foodcatalogue.dto.Restaurant;
 import com.food.foodcatalogue.entity.FoodItem;
+import com.food.foodcatalogue.exception.FoodCatalogueServiceException;
 import com.food.foodcatalogue.mapper.FoodItemMapper;
 import com.food.foodcatalogue.repository.FoodItemRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,7 +62,7 @@ public class FoodCatalogueService {
             log.debug("Full restaurant details: {}", restaurant);
         } else {
             log.warn("Restaurant not found for ID: {}", restaurantId);
-            throw new RuntimeException("Restaurant not found with ID: " + restaurantId);
+            throw new FoodCatalogueServiceException(HttpStatus.NOT_FOUND, "Restaurant not found with ID: " + restaurantId);
         }
 
         return createFoodCataloguePage(FoodItemMapper.INSTANCE.mapFoodItemListToFoodItemDtoList(foodItemList), restaurant);

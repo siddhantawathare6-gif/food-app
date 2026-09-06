@@ -15,22 +15,22 @@ export class OrderService {
 
   constructor(private http: HttpClient) { }
 
- httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type':'text/plain',
-      'Access-Control-Allow-Origin': 'http://localhost:4200' // Replace with your Angular app URL
-    })
-  };
+//  httpOptions = {
+//     headers: new HttpHeaders({
+//       'Content-Type':'text/plain',
+//       'Access-Control-Allow-Origin': 'http://localhost:4200' // Replace with your Angular app URL
+//     })
+//   };
 
   saveOrder(data: any):Observable<any>  {
     //return this.http.post<any>(this.apiUrl, data);
     return this.http.post<any>(`${this.baseUrl}/order/saveOrder`, data);
   }
 
-  private handleError(error: any) {
-    console.error('An error occurred:', error);
-    return throwError(error.message || error);
-  }
+  // private handleError(error: any) {
+  //   console.error('An error occurred:', error);
+  //   return throwError(error.message || error);
+  // }
 
 
 }

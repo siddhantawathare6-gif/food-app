@@ -24,10 +24,7 @@ export class RestaurantService {
       .set('pageSize', pageSize)
       .set('sortBy', sortBy)
       .set('sortDir', sortDir);
-    return this.http.get<RestaurantPage>(this.apiUrl, { params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<RestaurantPage>(this.apiUrl, { params });
 
     // return this.http.get<any>(`${this.baseUrl}/restaurant/fetchAllRestaurant`)
     //   .pipe(
@@ -35,8 +32,8 @@ export class RestaurantService {
     //   );
   }
 
-  private handleError(error: any) {
-    console.error('An error occurred:', error);
-    return throwError(error.message || error);
-  }
+  // private handleError(error: any) {
+  //   console.error('An error occurred:', error);
+  //   return throwError(error.message || error);
+  // }
 }
