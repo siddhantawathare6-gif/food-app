@@ -28,3 +28,17 @@ management:
     web:
       exposure:
         include: health,info,loggers
+
+resilience4j:
+  retry:
+    instances:
+      restaurantServiceRetry:
+        max-attempts: 3
+        wait-duration: 500ms
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.web.client.HttpServerErrorException
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG

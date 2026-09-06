@@ -10,7 +10,6 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +24,7 @@ public class OrderServiceTest {
     private SequenceGenerator sequenceGenerator;
 
     @Mock
-    private RestTemplate restTemplate;
+    private UserService userService;
 
     @Mock
     private OrderRepository orderRepo;
@@ -60,10 +59,7 @@ public class OrderServiceTest {
     void saveOrderInDb_happyPath_returnsMappedOrderDTO() {
         // Arrange
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(
-                eq("http://USER-SERVICE/user/fetchUserById/101"),
-                eq(UserDTO.class)))
-                .thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(101)).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         // Act — the real OrderMapper.INSTANCE runs here; it's a pure mapping,
@@ -73,37 +69,35 @@ public class OrderServiceTest {
         // Assert
         assertNotNull(result);
         verify(sequenceGenerator, times(1)).generateNextOrderId();
-        verify(restTemplate, times(1))
-                .getForObject("http://USER-SERVICE/user/fetchUserById/101", UserDTO.class);
+        verify(userService, times(1)).fetchUserDetailsFromUserId(101);
         verify(orderRepo, times(1)).save(any(Order.class));
     }
 
     @Test
     void saveOrderInDb_generatesUniqueOrderId_beforeCallingUserService() {
         when(sequenceGenerator.generateNextOrderId()).thenReturn(42);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         orderService.saveOrderInDb(orderDetails);
 
-        InOrder inOrder = inOrder(sequenceGenerator, restTemplate, orderRepo);
+        InOrder inOrder = inOrder(sequenceGenerator, userService, orderRepo);
         inOrder.verify(sequenceGenerator).generateNextOrderId();
-        inOrder.verify(restTemplate).getForObject(anyString(), eq(UserDTO.class));
+        inOrder.verify(userService).fetchUserDetailsFromUserId(anyInt());
         inOrder.verify(orderRepo).save(any(Order.class));
     }
 
     @Test
     void saveOrderInDb_callsUserServiceWithCorrectUserId() {
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         orderDetails.setUserId(999);
 
         orderService.saveOrderInDb(orderDetails);
 
-        verify(restTemplate).getForObject(
-                "http://USER-SERVICE/user/fetchUserById/999", UserDTO.class);
+        verify(userService).fetchUserDetailsFromUserId(999);
     }
 
     @Test
@@ -112,7 +106,7 @@ public class OrderServiceTest {
         // Document/confirm this is the desired behavior; consider throwing
         // a custom exception instead if a null user should be treated as an error.
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(null);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(null);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         assertDoesNotThrow(() -> orderService.saveOrderInDb(orderDetails));
@@ -125,7 +119,7 @@ public class OrderServiceTest {
         // If USER-SERVICE (via Eureka/RestTemplate) is down or errors out,
         // the exception should propagate rather than silently saving a bad order.
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class)))
+        when(userService.fetchUserDetailsFromUserId(anyInt()))
                 .thenThrow(new RuntimeException("USER-SERVICE unavailable"));
 
         assertThrows(RuntimeException.class,
@@ -137,7 +131,7 @@ public class OrderServiceTest {
     @Test
     void saveOrderInDb_whenRepoSaveFails_propagatesException() {
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class)))
                 .thenThrow(new RuntimeException("DB write failed"));
 
@@ -150,7 +144,7 @@ public class OrderServiceTest {
         orderDetails.setFoodItemsList(Collections.emptyList());
 
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         OrderDTO result = orderService.saveOrderInDb(orderDetails);
@@ -164,7 +158,7 @@ public class OrderServiceTest {
         orderDetails.setFoodItemsList(Arrays.asList(new FoodItemsDTO(), new FoodItemsDTO()));
 
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         orderService.saveOrderInDb(orderDetails);
@@ -181,7 +175,7 @@ public class OrderServiceTest {
         orderDetails.setRestaurant(null);
 
         when(sequenceGenerator.generateNextOrderId()).thenReturn(1);
-        when(restTemplate.getForObject(anyString(), eq(UserDTO.class))).thenReturn(userDTO);
+        when(userService.fetchUserDetailsFromUserId(anyInt())).thenReturn(userDTO);
         when(orderRepo.save(any(Order.class))).thenReturn(savedOrder);
 
         assertDoesNotThrow(() -> orderService.saveOrderInDb(orderDetails));

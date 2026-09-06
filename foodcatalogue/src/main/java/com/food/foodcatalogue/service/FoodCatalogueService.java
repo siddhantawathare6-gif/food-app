@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class FoodCatalogueService {
     FoodItemRepo foodItemRepo;
 
     @Autowired
-    RestTemplate restTemplate;
+    RestaurantService restaurantService;
 
 
     public FoodItemDTO addFoodItem(FoodItemDTO foodItemDTO) {
@@ -50,8 +49,8 @@ public class FoodCatalogueService {
 
         log.info("Fetching food catalogue details for restaurantId: {}", restaurantId);
 
-        List<FoodItem> foodItemList =  fetchFoodItemList(restaurantId);
-        Restaurant restaurant = fetchRestaurantDetailsFromRestaurantMS(restaurantId);
+        List<FoodItem> foodItemList = fetchFoodItemList(restaurantId);
+        Restaurant restaurant = restaurantService.fetchRestaurantDetailsFromRestaurantMS(restaurantId);
 
         if (restaurant != null) {
             log.info("Restaurant details fetched successfully - id: {}, name: '{}', city: '{}'",
@@ -72,10 +71,6 @@ public class FoodCatalogueService {
         foodCataloguePage.setFoodItemsList(foodItemList);
         foodCataloguePage.setRestaurant(restaurant);
         return foodCataloguePage;
-    }
-
-    private Restaurant fetchRestaurantDetailsFromRestaurantMS(Integer restaurantId) {
-        return restTemplate.getForObject("http://RESTAURANT-SERVICE/restaurant/fetchById/"+restaurantId, Restaurant.class);
     }
 
     private List<FoodItem> fetchFoodItemList(Integer restaurantId) {
