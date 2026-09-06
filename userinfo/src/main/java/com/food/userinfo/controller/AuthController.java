@@ -4,6 +4,7 @@ import com.food.userinfo.dto.JwtAuthResponse;
 import com.food.userinfo.dto.LoginDTO;
 import com.food.userinfo.dto.RegisterDTO;
 import com.food.userinfo.service.AuthService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/login", "/signin"})
-    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO login) {
+    public ResponseEntity<JwtAuthResponse> login(@Valid @RequestBody LoginDTO login) {
         log.info("Login attempt for user: {}", maskEmailOrUsername(login.getEmailOrUsername()));
 
         // Log full login request at DEBUG level (without password)
@@ -48,36 +49,13 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/register", "/signup"})
-    public ResponseEntity<String> login(@RequestBody RegisterDTO register) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDTO register) {
 
         // Log registration attempt
         log.info("Registration attempt for user: {}, email: {}", register.getUsername(), maskEmail(register.getEmail()));
 
         // Log full registration request at DEBUG level (without password)
         log.debug("Registration request - username: {}, email: {}, role: [PROTECTED]", register.getUsername(), register.getEmail());
-
-        if (register.getUsername() == null || register.getUsername().trim().isEmpty()) {
-            log.warn("Registration validation failed: username is null or empty");
-            throw new IllegalArgumentException("Username is required");
-        }
-
-        if (register.getEmail() == null || register.getEmail().trim().isEmpty()) {
-            log.warn("Registration validation failed: email is null or empty for user: {}", register.getUsername());
-            throw new IllegalArgumentException("Email is required");
-        }
-
-        if (register.getPassword() == null || register.getPassword().trim().isEmpty()) {
-            log.warn("Registration validation failed: password is null or empty for user: {}",
-                    register.getUsername());
-            throw new IllegalArgumentException("Password is required");
-        }
-
-        // Validate email format (basic check)
-        if (!isValidEmail(register.getEmail())) {
-            log.warn("Registration validation failed: invalid email format for user: {}",
-                    register.getUsername());
-            throw new IllegalArgumentException("Invalid email format");
-        }
 
         String response = authService.register(register);
 
