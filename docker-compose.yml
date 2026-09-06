@@ -89,7 +89,7 @@ services:
       - "9097:9097"
     environment:
       JAVA_OPTS: ""
-      EUREKA_SERVER_URL: http://eureka:8761/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
       MONGODB_URI: mongodb://mongo-db:27017/order_db
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
@@ -167,7 +167,7 @@ services:
       - "8080:8080"
     environment:
       JAVA_OPTS: ""
-      EUREKA_SERVER_URL: http://eureka:8761/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
       REDIS_HOST: redis

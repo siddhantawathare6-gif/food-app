@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+//import { catchError } from 'rxjs/operators';
 import { API_URL_RL } from '../../constants/url';
 import { RestaurantPage } from '../../shared/model/RestaurantPage';
 //import { getServiceUrl } from '../../constants/url';

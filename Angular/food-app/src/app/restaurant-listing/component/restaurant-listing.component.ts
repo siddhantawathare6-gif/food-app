@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { RestaurantService } from '../service/restaurant.service';
 import { Restaurant } from '../../shared/model/Restaurant';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { extractErrorMessage } from '../../shared/util/error-utils';
 
