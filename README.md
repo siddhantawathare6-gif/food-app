@@ -695,3 +695,149 @@ Step 5 — Add LOGSTASH_HOST env var to each service in docker-compose.yml
       LOGSTASH_HOST: logstash
 
 Open Kibana at http://localhost:5601 → go to Stack Management → Index Patterns → create a pattern matching microservices-logs-* → then go to Discover to see logs streaming in from all services in one place, filterable by service field
+
+Implementing rate limiter
+1> using redis (locally)
+Step 1 — Install and start Redis locally (macOS)
+brew install redis 
+brew services start redis
+
+Verify it's running:
+redis-cli ping
+Should return PONG.
+
+Step 2 — Add the Redis reactive dependency to api-gateway/pom.xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+</dependency>
+
+Step 3 — Add Redis connection config to application.yaml
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
+Step 4 — Create the KeyResolver bean
+This defines "who" gets limited — starting with per-IP:
+@Configuration public class RateLimiterConfig { @Bean public KeyResolver ipKeyResolver() { return exchange -> Mono.just( exchange.getRequest().getRemoteAddress().getAddress().getHostAddress() ); } }
+
+Step 5 — Apply RequestRateLimiter to your routes in application.yaml
+Using the correct spring.cloud.gateway.server.webflux.* prefix we established earlier for your version:
+spring:
+  application:
+    name: API-GATEWAY
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "http://localhost:4200"
+                allowed-methods: "*"
+                allowed-headers: "*"
+          routes:
+            - id: userinfo-service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/auth/**,/user/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 5
+            - id: foodcatalogue-service
+              uri: lb://FOOD-CATALOGUE-SERVICE
+              predicates:
+                - Path=/foodCatalogue/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+            - id: restaurant-service
+              uri: lb://RESTAURANT-SERVICE
+              predicates:
+                - Path=/restaurant/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/order/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 5
+                    redis-rate-limiter.burstCapacity: 10
+
+What replenishRate and burstCapacity mean
+replenishRate — steady-state requests allowed per second, sustained indefinitely
+burstCapacity — the maximum size of the "bucket" — allows short bursts above the steady rate, up to this ceiling, before requests start getting rejected
+I set userinfo-service (login/register) noticeably stricter (2/sec, burst 5) than browsing routes (10/sec, burst 20) — since login endpoints are the most common brute-force/abuse target.
+2> JWT based rate limiter
+1. Add JWT dependencies to api-gateway/pom.xml
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.6</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.6</version>
+    <scope>runtime</scope>
+</dependency>
+
+2. Share the same JWT secret
+# api-gateway/application.yaml
+app:
+  jwt:
+    secret: ${JWT_SECRET:your-actual-secret-value-here}
+3. JWT utility class in the gateway (minimal — just enough to extract the subject)
+
+@Component public class GatewayJwtUtils { @Value("${app.jwt.secret}") private String secret; public String extractUsername(String token) { try { return Jwts.parser() .verifyWith((SecretKey) getSignKey()) .build() .parseSignedClaims(token) .getPayload() .getSubject(); } catch (Exception e) { return null; // invalid/expired token — treat as anonymous } } private Key getSignKey() { return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)); } } 
+4. The JWT-based KeyResolver
+
+@Configuration public class RateLimiterConfig { @Autowired private GatewayJwtUtils jwtUtils;
+@Bean public KeyResolver userKeyResolver() { return exchange -> { String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization"); if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) { String token = authHeader.substring(7); String username = jwtUtils.extractUsername(token); if (StringUtils.hasText(username)) { return Mono.just(username); } } // Fallback to IP for requests with no valid token (shouldn't normally // reach an authenticated route, but keeps rate limiting safe either way) String clientIp = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress(); return Mono.just("anonymous:" + clientIp); }; }}
+
+5. Apply userKeyResolver to the order-service route
+
+id: restaurant-service uri: lb://RESTAURANT-SERVICE predicates: - Path=/restaurant/** filters: - name: RequestRateLimiter args: key-resolver: "#{@ipKeyResolver}" redis-rate-limiter.replenishRate: 10 redis-rate-limiter.burstCapacity: 20 - id: order-service uri: lb://ORDER-SERVICE predicates: - Path=/order/** filters: - name: RequestRateLimiter args: key-resolver: "#{@userKeyResolver}" redis-rate-limiter.replenishRate: 5 redis-rate-limiter.burstCapacity: 10
+6. Test it
+
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d ‘{"emailOrUsername":"siddhant","password":"yourActualPassword"}'
+
+Copy the accessToken from the response, then hammer the order endpoint with it:
+
+TOKEN="paste-your-token-here"
+for i in {1..12}; do
+  curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/order/saveOrder \
+    -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"userId":1,"foodItemsList":[],"restaurant":{}}'
+done
+
