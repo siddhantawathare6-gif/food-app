@@ -23,7 +23,7 @@ public class OrderService {
     SequenceGenerator sequenceGenerator;
 
     @Autowired
-    UserService userService;
+    CachedUserService cachedUserService;
 
 
     public OrderDTO saveOrderInDb(OrderDTOFromFE orderDetails) {
@@ -31,7 +31,7 @@ public class OrderService {
         log.info("Processing order save for userId: {}, restaurantId: {}", orderDetails.getUserId(), orderDetails.getRestaurant());
 
         Integer newOrderID = sequenceGenerator.generateNextOrderId();
-        UserDTO userDTO = userService.fetchUserDetailsFromUserId(orderDetails.getUserId());
+        UserDTO userDTO = cachedUserService.getUserDetails(orderDetails.getUserId());
         Order orderToBeSaved = new Order(newOrderID, orderDetails.getFoodItemsList(), orderDetails.getRestaurant(), userDTO);
 
         Order savedOrder = orderRepo.save(orderToBeSaved);

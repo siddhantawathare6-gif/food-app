@@ -24,7 +24,7 @@ public class FoodCatalogueService {
     FoodItemRepo foodItemRepo;
 
     @Autowired
-    RestaurantService restaurantService;
+    CachedRestaurantService cachedRestaurantService;
 
 
     public FoodItemDTO addFoodItem(FoodItemDTO foodItemDTO) {
@@ -52,7 +52,7 @@ public class FoodCatalogueService {
         log.info("Fetching food catalogue details for restaurantId: {}", restaurantId);
 
         List<FoodItem> foodItemList = fetchFoodItemList(restaurantId);
-        Restaurant restaurant = restaurantService.fetchRestaurantDetailsFromRestaurantMS(restaurantId);
+        Restaurant restaurant = cachedRestaurantService.getRestaurantDetails(restaurantId);
 
         if (restaurant != null) {
             log.info("Restaurant details fetched successfully - id: {}, name: '{}', city: '{}'",
