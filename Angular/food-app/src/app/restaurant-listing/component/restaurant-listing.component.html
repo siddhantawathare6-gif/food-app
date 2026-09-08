@@ -4,16 +4,52 @@
     {{ errorMessage }}
   </div>
 
+  <!-- ADD THIS: Admin actions section -->
+  <div class="admin-actions" *ngIf="isAdmin">
+    <button class="btn-add-restaurant" (click)="navigateToAddRestaurant()">
+      <i class="fa fa-plus"></i> Add New Restaurant
+    </button>
+  </div>
+
   <div class="restaurant-grid">
     <div class="restaurant-card" *ngFor="let restaurant of restaurantList">
       <div class="restaurant-image">
-        <img [src]="'assets/restaurant-pics/' + getRandomImage()" alt="Restaurant 1">
+        <!-- Load image from backend using the image name -->
+        <img 
+          [src]="getImageUrl(restaurant.id)" 
+          [alt]="restaurant.name"
+          (error)="onImageError($event)">
       </div>
       <div class="restaurant-details">
         <h3 class="restaurant-name">{{restaurant.name}}</h3>
-        <div class="restaurant-rating">
+        <!-- Restaurant Description (optional) -->
+        <p class="restaurant-description" *ngIf="restaurant.restaurantDescription">
+          {{ restaurant.restaurantDescription | slice:0:60 }}{{ restaurant.restaurantDescription.length > 60 ? '...' : '' }}
+        </p>
+        <!-- <div class="restaurant-rating">
           <span class="rating"><i class="fa fa-star"></i>4.5</span>
           <span class="rating-count">(500+)</span>
+        </div> -->
+        <!-- Rating and Review Count from backend -->
+        <div class="restaurant-rating">
+          <span class="rating" [style.color]="getRatingColor(restaurant.rating)">
+            <i class="fa fa-star"></i> 
+            {{ restaurant.rating ? restaurant.rating.toFixed(1) : 'No rating' }}
+          </span>
+          <span class="rating-stars" [style.color]="getRatingColor(restaurant.rating)">
+            {{ getRatingStars(restaurant.rating) }}
+          </span>
+          <span class="rating-count" *ngIf="restaurant.reviewCount">
+            ({{ restaurant.reviewCount }} review{{ restaurant.reviewCount > 1 ? 's' : '' }})
+          </span>
+          <span class="rating-count" *ngIf="!restaurant.reviewCount || restaurant.reviewCount === 0">
+            (No reviews yet)
+          </span>
+        </div>
+        <!-- City and Address -->
+        <div class="restaurant-location">
+          <span class="city"><i class="fa fa-map-marker"></i> {{ restaurant.city }}</span>
+          <span class="address" *ngIf="restaurant.address">, {{ restaurant.address }}</span>
         </div>
         <button class="order-btn" (click)="onButtonClick(restaurant.id)">Order Now</button>
       </div>

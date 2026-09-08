@@ -5,9 +5,7 @@
 .main-content {
   position: fixed;
   top: 70px;
-  /* must match header height exactly */
   bottom: 0;
-  /* must match pagination bar height exactly */
   left: 0;
   right: 0;
   overflow-y: auto;
@@ -19,7 +17,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
-  padding: 0 24px;       /* horizontal padding moved here instead */
+  padding: 0 24px;
   box-sizing: border-box;
 }
 
@@ -28,17 +26,29 @@
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .restaurant-image {
   height: 200px;
   overflow: hidden;
+  background-color: #f0f0f0;
 }
 
 .restaurant-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.restaurant-card:hover .restaurant-image img {
+  transform: scale(1.05);
 }
 
 .restaurant-details {
@@ -47,20 +57,57 @@
 
 .restaurant-name {
   font-size: 20px;
-  margin: 0;
+  margin: 0 0 8px 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.restaurant-description {
+  color: #666;
+  font-size: 14px;
+  margin: 8px 0;
+  line-height: 1.4;
 }
 
 .restaurant-rating {
   margin: 10px 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .rating {
   font-weight: bold;
-  margin-right: 5px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.star {
-  color: orange;
+.rating-stars {
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.rating-count {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.restaurant-location {
+  color: #6c757d;
+  font-size: 14px;
+  margin: 8px 0 12px 0;
+}
+
+.restaurant-location .city {
+  font-weight: 500;
+  color: #495057;
+}
+
+.restaurant-location .address {
+  color: #6c757d;
 }
 
 .order-btn {
@@ -71,15 +118,62 @@
   cursor: pointer;
   font-size: 16px;
   padding: 10px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .order-btn:hover {
   background-color: #0093c6;
+  transform: scale(1.02);
 }
 
+/* Admin Actions */
+.admin-actions {
+  padding: 0 24px 20px 24px;
+  display: flex;
+  justify-content: flex-end;
+}
 
+.btn-add-restaurant {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-add-restaurant:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-add-restaurant i {
+  font-size: 18px;
+}
+
+.error-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 24px;
+  margin: 0 24px 20px 24px;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Header Styles (keep your existing header styles) */
 .header {
   background-color: #00A7E1;
   color: #fff;
@@ -129,22 +223,20 @@
     flex-direction: column;
     text-align: center;
   }
-
   .header-nav {
     margin-top: 20px;
   }
-
   .header-nav ul {
     display: block;
   }
-
   .header-nav li {
     margin: 10px 0;
   }
 }
 
+/* Pagination Styles */
 .pagination-container {
-   width: 100vw;
+  width: 100vw;
   position: relative;
   left: 50%;
   right: 50%;
@@ -157,8 +249,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  box-sizing: border-box;     
-
+  box-sizing: border-box;
 }
 
 .page-size-selector {
@@ -192,6 +283,11 @@
   background-color: #fff;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #e0e0e0;
 }
 
 .pagination-controls button.active {
@@ -217,6 +313,5 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  /* important — allows flex child to shrink and scroll properly */
   overflow: hidden;
 }

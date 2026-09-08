@@ -14,5 +14,8 @@ public class RestaurantDTO {
     private String address;
     private String city;
     private String restaurantDescription;
+    private String imageUrl; // Add this field
+    private Double rating; // Add rating
+    private Integer reviewCount; // Add review count
 
 }

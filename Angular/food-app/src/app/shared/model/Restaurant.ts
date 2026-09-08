@@ -4,4 +4,7 @@ export interface Restaurant {
     address: string ;
     city: string;
     restaurantDescription: string;
+    imageName?: string;      
+    rating?: number;        
+    reviewCount?: number; 
 }

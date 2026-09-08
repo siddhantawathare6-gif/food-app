@@ -5,6 +5,7 @@ import { FoodCatalogueComponent } from './food-catalogue/component/food-catalogu
 import { OrderSummaryComponent } from './order-summary/component/order-summary.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { AddRestaurantComponent } from './add-restaurant/add-restaurant.component';
 
 export const routes: Routes = [
     { path: '', component: RestaurantListingComponent },
@@ -12,6 +13,7 @@ export const routes: Routes = [
     { path: 'food-catalogue/:id', component: FoodCatalogueComponent },
     { path: 'orderSummary', component: OrderSummaryComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent }
+    { path: 'register', component: RegisterComponent },
+    { path: 'restaurant/add', component: AddRestaurantComponent }
 
 ];

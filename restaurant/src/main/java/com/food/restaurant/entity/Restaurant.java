@@ -21,5 +21,8 @@ public class Restaurant {
     private String address;
     private String city;
     private String restaurantDescription;
+    private String imageName; // Store image filename
+    private Double rating;
+    private Integer reviewCount;
 
 }

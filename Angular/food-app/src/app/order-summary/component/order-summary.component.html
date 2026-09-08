@@ -1,41 +1,70 @@
 <div class="order-summary">
 
-   <div class="error-banner" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
+  <div class="error-banner" *ngIf="errorMessage">
+    <i class="fa fa-exclamation-circle"></i> {{ errorMessage }}
+  </div>
 
+  <div class="header-section">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
     <h1>Order Summary</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of orderSummary?.foodItemsList ?? []">
-          <td>{{ item.itemName }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>&#x20b9; {{ item.price }}</td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2">Total</td>
-          <td>&#x20b9; {{ total }}</td>
-        </tr>
-      </tfoot>
-    </table>
-    <button class="checkout-button" (click)="saveOrder()">Place Order</button>
   </div>
-  
-  
-  <div class="dialog-container" *ngIf="showDialog">
-    <div class="dialog-box">
-      <h2>Order Placed!</h2>
-      <p>Your order has been successfully placed.</p>
-      <button class="close-button" (click)="closeDialog()">Close</button>
+
+  <!-- Restaurant Info -->
+  <div class="restaurant-info" *ngIf="orderSummary?.restaurant">
+    <h3>{{ orderSummary.restaurant?.name }}</h3>
+    <p>{{ orderSummary.restaurant?.address }}, {{ orderSummary.restaurant?.city }}</p>
+  </div>
+
+  <!-- Order Items Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of orderSummary?.foodItemsList ?? []">
+        <td>{{ item.itemName }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>&#x20b9; {{ item.price }}</td>
+        <td>&#x20b9; {{ item.quantity * item.price }}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" class="total-label"><strong>Total Amount</strong></td>
+        <td class="total-amount">&#x20b9; {{ total }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="checkout-button" (click)="saveOrder()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Place Order</span>
+      <span *ngIf="isLoading">
+        <i class="fa fa-spinner fa-spin"></i> Processing...
+      </span>
+    </button>
+  </div>
+</div>
+
+<!-- Success Dialog -->
+<div class="dialog-container" *ngIf="showDialog">
+  <div class="dialog-box">
+    <div class="dialog-icon">
+      <i class="fa fa-check-circle" style="color: #28a745; font-size: 48px;"></i>
     </div>
+    <h2>Order Placed Successfully!</h2>
+    <p *ngIf="orderResponse">Order ID: #{{ orderResponse.orderId }}</p>
+    <p>Your order has been confirmed and will be delivered shortly.</p>
+    <button class="close-button" (click)="closeDialog()">
+      View Order Status
+    </button>
   </div>
-  
+</div>

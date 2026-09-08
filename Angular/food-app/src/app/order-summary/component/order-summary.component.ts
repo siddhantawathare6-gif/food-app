@@ -21,6 +21,9 @@ export class OrderSummaryComponent {
   total?: number = 0;
   showDialog = false;
   errorMessage: string | null = null;
+  isLoading = false;
+  orderResponse: any = null;
+  restaurantId: number | null = null;
 
   constructor(private route: ActivatedRoute,
     private orderService: OrderService,
@@ -28,10 +31,15 @@ export class OrderSummaryComponent {
     private authService: AuthService) { }
 
   ngOnInit() {
+    this.loadOrderData();
+  }
+
+  loadOrderData() {
     const data = this.route.snapshot.queryParams['data'];
     console.log('Query Param Data:', data);
     if (!data) {
       console.error('No order summary data found');
+      this.errorMessage = 'No order data found. Please add items to your cart.';
       return;
     }
     try {
@@ -41,7 +49,11 @@ export class OrderSummaryComponent {
       console.log('Parsed Data:', parsedData);
       console.log('Food Items:', parsedData.foodItemsList);
 
-      parsedData.userId = 1;
+      // Store restaurant ID for back navigation
+      if (parsedData.restaurant) {
+        this.restaurantId = parsedData.restaurant.id;
+        console.log('Restaurant ID for back navigation:', this.restaurantId);
+      }
 
       this.orderSummary = parsedData;
 
@@ -57,6 +69,7 @@ export class OrderSummaryComponent {
     } catch (error) {
 
       console.error('Error parsing order summary:', error);
+      this.errorMessage = 'Invalid order data. Please try again.';
 
     }
 
@@ -64,7 +77,11 @@ export class OrderSummaryComponent {
 
   saveOrder() {
     this.errorMessage = null;
+    this.isLoading = true;
+
     if (!this.authService.isLoggedIn()) {
+      this.isLoading = false;
+
       this.router.navigate(['/register'], {
         queryParams: {
           returnUrl: '/orderSummary',
@@ -73,15 +90,39 @@ export class OrderSummaryComponent {
       });
       return;
     }
-    this.orderSummary.userId = this.authService.getUserId()!;
+    const userId = this.authService.getUserId();
+
+    if (!userId) {
+      this.isLoading = false;
+      this.errorMessage = 'User ID not found. Please login again.';
+      return;
+    }
+
+    // Set the userId
+    this.orderSummary.userId = userId;
+    console.log('Final order data being sent:', this.orderSummary);
+
+
     this.orderService.saveOrder(this.orderSummary)
       .subscribe({
         next: (response) => {
+          this.isLoading = false;
+          console.log('Order saved successfully:', response);
+          this.orderResponse = response;
           this.showDialog = true;
         },
         error: (err: HttpErrorResponse) => {
+          this.isLoading = false;
+          console.error('Full error details:', err);
+
+          // Extract error message
+          const errorMsg = err.error?.message || err.message || 'Failed to place your order.';
           this.errorMessage = extractErrorMessage(err, 'Failed to place your order. Please try again.');
-          console.error('Failed to save order:', err);
+
+          // Log more details for debugging
+          console.error('Error status:', err.status);
+          console.error('Error body:', err.error);
+          console.error('Error headers:', err.headers);
         }
       });
   }
@@ -91,5 +132,17 @@ export class OrderSummaryComponent {
     this.router.navigate(['/']); // Replace '/home' with the actual route for your home page
   }
 
+
+  goBack() {
+    console.log('Going back with restaurantId:', this.restaurantId);
+    this.router.navigate(['/food-catalogue']);
+    if (this.restaurantId) {
+      // Navigate back to food catalogue with the restaurant ID
+      this.router.navigate(['/food-catalogue', this.restaurantId]);
+    } else {
+      // If no restaurant ID, go to home page
+      this.router.navigate(['/']);
+    }
+  }
 
 }

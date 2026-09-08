@@ -28,9 +28,24 @@ spring:
       port: 6379
   cache:
     type: redis
+  # File upload size limits
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,loggers
+
+# Image upload configuration
+app:
+  image:
+    upload-dir: uploads/restaurants
+    base-url: /restaurant/image
+
+
+
+

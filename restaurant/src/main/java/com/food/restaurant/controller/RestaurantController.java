@@ -7,8 +7,10 @@ import com.food.restaurant.service.RestaurantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/restaurant")
@@ -32,7 +34,7 @@ public class RestaurantController {
         RestaurantPageDto restaurantPageDto = restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
 
         log.info("GET /restaurant/fetchAllRestaurant - Success: {} restaurants found (page {} of {})",
-                restaurantPageDto.getTotalElement(), restaurantPageDto.getPageNo() + 1,restaurantPageDto.getTotalPage());
+                restaurantPageDto.getTotalElement(), restaurantPageDto.getPageNo() + 1, restaurantPageDto.getTotalPage());
 
         return new ResponseEntity<>(restaurantPageDto, HttpStatus.OK);
     }
@@ -57,5 +59,24 @@ public class RestaurantController {
         log.info("GET /restaurant/fetchById/{} - Success: Found restaurant '{}' in city '{}'", id, restaurant.getName(), restaurant.getCity());
 
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
+    }
+
+    @PostMapping("/uploadImage/{id}")
+    public ResponseEntity<String> uploadImage(
+            @PathVariable Integer id,
+            @RequestParam("image") MultipartFile file) {
+        log.info("POST /restaurant/uploadImage/{} - Uploading image", id);
+        String imageUrl = restaurantService.uploadRestaurantImage(id, file);
+        return ResponseEntity.ok(imageUrl);
+    }
+
+    @GetMapping(value = "/image/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
+        log.debug("GET /restaurant/image/{} - Retrieving image", id);
+        byte[] imageData = restaurantService.getRestaurantImage(id);
+        if (imageData.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(imageData);
     }
 }

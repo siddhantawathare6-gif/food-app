@@ -57,6 +57,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(RestaurantServiceException.class)
+    public ResponseEntity<ErrorDetails> handleRestaurantServiceException(RestaurantServiceException exception,
+                                                                         WebRequest webRequest) {
+        log.warn("RestaurantServiceException: {}", exception.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
+                webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails, exception.getStatus());
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception,
