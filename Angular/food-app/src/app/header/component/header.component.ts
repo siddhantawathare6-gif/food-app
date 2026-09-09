@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 import { AuthService } from '../../auth/service/AuthService';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -15,7 +15,8 @@ export class HeaderComponent {
   isDropdownOpen: boolean = false;
 
   constructor(private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private elementRef: ElementRef
   ) { }
 
   ngOnInit() {
@@ -54,6 +55,17 @@ export class HeaderComponent {
   goHome() {
     this.router.navigate(['/']);
     this.isDropdownOpen = false;
+  }
+
+  // ===== CLICK OUTSIDE DETECTION =====
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const clickedInside = this.elementRef.nativeElement.contains(target);
+
+    if (!clickedInside && this.isDropdownOpen) {
+      this.isDropdownOpen = false;
+    }
   }
 
   logout() {

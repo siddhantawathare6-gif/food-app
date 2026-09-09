@@ -125,21 +125,28 @@ public class FoodCatalogueService {
         Restaurant updatedRestaurant = restaurantService.updateRestaurant(restaurantId, request.getRestaurant());
         log.info("Restaurant updated with ID: {}", updatedRestaurant.getId());
 
-        // Step 2: Update food items
-        if (request.getFoodItems() != null) {
+        // 2. Delete all existing food items
+        foodItemRepo.deleteByRestaurantId(restaurantId);
+
+        // Step 2: Save new food items (with id = null)
+        if (request.getFoodItems() != null && !request.getFoodItems().isEmpty()) {
             // Delete existing food items
-            foodItemRepo.deleteByRestaurantId(restaurantId);
+//            foodItemRepo.deleteByRestaurantId(restaurantId);
 
             // Save new food items
-            List<FoodItemDTO> foodItems = request.getFoodItems().stream()
-                    .peek(item -> item.setRestaurantId(restaurantId))
-                    .collect(Collectors.toList());
-
-            List<FoodItem> foodItemsToSave = foodItems.stream()
+            List<FoodItem> foodItems = request.getFoodItems().stream()
+                    .peek(item -> {
+                        item.setRestaurantId(restaurantId);
+                        item.setId(null);
+                    })
                     .map(FoodItemMapper.INSTANCE::mapFoodItemDTOToFoodItem)
                     .collect(Collectors.toList());
 
-            List<FoodItem> savedItems = foodItemRepo.saveAll(foodItemsToSave);
+//            List<FoodItem> foodItemsToSave = foodItems.stream()
+//                    .map(FoodItemMapper.INSTANCE::mapFoodItemDTOToFoodItem)
+//                    .collect(Collectors.toList());
+
+            List<FoodItem> savedItems = foodItemRepo.saveAll(foodItems);
             log.info("Updated {} food items for restaurant ID: {}", savedItems.size(), restaurantId);
 
             request.setFoodItems(savedItems.stream()
@@ -147,7 +154,7 @@ public class FoodCatalogueService {
                     .collect(Collectors.toList()));
         }
 
-        request.setRestaurant(updatedRestaurant);
+//        request.setRestaurant(updatedRestaurant);
         return request;
     }
 

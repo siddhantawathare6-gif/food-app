@@ -30,13 +30,13 @@
               </div>
             </div>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" (click)="navigateToProfile()">
+            <a class="dropdown-item" (click)="navigateToProfile(); closeDropdown()">
               <i class="fa fa-user"></i> My Profile
             </a>
-            <a class="dropdown-item" (click)="navigateToOrders()">
+            <a class="dropdown-item" (click)="navigateToOrders(); closeDropdown()">
               <i class="fa fa-shopping-bag"></i> My Orders
             </a>
-            <a class="dropdown-item" (click)="navigateToFavorites()">
+            <a class="dropdown-item" (click)="navigateToFavorites(); closeDropdown()">
               <i class="fa fa-heart"></i> Favorites
             </a>
             <div class="dropdown-divider"></div>
@@ -57,14 +57,13 @@
               </div>
               <div class="dropdown-user-info">
                 <span class="dropdown-username">Welcome, User!</span>
-                <span class="dropdown-email">Please login to continue</span>
               </div>
             </div>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item login-item" (click)="navigateToLogin()">
+            <a class="dropdown-item login-item" (click)="navigateToLogin(); closeDropdown()">
               <i class="fa fa-sign-in-alt"></i> Login
             </a>
-            <a class="dropdown-item register-item" (click)="navigateToRegister()">
+            <a class="dropdown-item register-item" (click)="navigateToRegister(); closeDropdown()">
               <i class="fa fa-user-plus"></i> Register
             </a>
           </div>

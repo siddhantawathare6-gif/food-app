@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 import { HeaderComponent } from './header/component/header.component';
-import { RestaurantListingComponent } from './restaurant-listing/component/restaurant-listing.component';
 import { FoodCatalogueComponent } from './food-catalogue/component/food-catalogue.component';
 import { OrderSummaryComponent } from './order-summary/component/order-summary.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { AddRestaurantComponent } from './restaurant-listing/add-restaurant/add-restaurant.component';
-import { EditRestaurantComponent } from './restaurant-listing/edit-restaurant/edit-restaurant.component';
+import { AddRestaurantComponent } from './restaurant/add-restaurant/add-restaurant.component';
+import { EditRestaurantComponent } from './restaurant/edit-restaurant/edit-restaurant.component';
+import { RestaurantListingComponent } from './restaurant/restaurant-listing/restaurant-listing.component';
 
 export const routes: Routes = [
     { path: '', component: RestaurantListingComponent },
