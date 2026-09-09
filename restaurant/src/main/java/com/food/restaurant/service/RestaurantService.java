@@ -16,4 +16,8 @@ public interface RestaurantService {
     String uploadRestaurantImage(Integer restaurantId, MultipartFile file) ;
 
     byte[] getRestaurantImage(Integer restaurantId);
+
+    RestaurantDTO updateRestaurant(Integer id, RestaurantDTO restaurantDTO);
+
+    void deleteRestaurant(Integer id);
 }

@@ -79,4 +79,20 @@ public class RestaurantController {
         }
         return ResponseEntity.ok(imageData);
     }
+
+    @PutMapping("/updateRestaurant/{id}")
+    public ResponseEntity<RestaurantDTO> updateRestaurant(
+            @PathVariable Integer id,
+            @RequestBody RestaurantDTO restaurantDTO) {
+        log.info("PUT /restaurant/updateRestaurant/{} - Updating restaurant", id);
+        RestaurantDTO updatedRestaurant = restaurantService.updateRestaurant(id, restaurantDTO);
+        return new ResponseEntity<>(updatedRestaurant, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteRestaurant/{id}")
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Integer id) {
+        log.info("DELETE /restaurant/deleteRestaurant/{} - Deleting restaurant", id);
+        restaurantService.deleteRestaurant(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

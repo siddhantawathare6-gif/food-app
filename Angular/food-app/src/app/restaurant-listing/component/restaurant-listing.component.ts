@@ -25,6 +25,10 @@ export class RestaurantListingComponent {
   public errorMessage: string | null = null;
   public isAdmin: boolean = false;
 
+  public showDeleteDialog = false;
+  public restaurantToDelete: Restaurant | null = null;
+  public isDeleting = false;
+
   ngOnInit() {
     this.getAllRestaurants();
     this.checkAdminStatus();
@@ -48,7 +52,7 @@ export class RestaurantListingComponent {
         console.log('Restaurants loaded:', this.restaurantList);
         this.restaurantList.forEach(restaurant => {
           console.log(`Restaurant ${restaurant.id} - ${restaurant.name}:`, {
-            imageName: restaurant.imageName,
+            imageName: restaurant.imageUrl,
             imageUrl: this.getImageUrl(restaurant.id)
           });
         });
@@ -130,6 +134,48 @@ export class RestaurantListingComponent {
 
   navigateToAddRestaurant() {
     this.router.navigate(['/restaurant/add']);
+  }
+
+  navigateToEditRestaurant(id: number) {
+    this.router.navigate(['/restaurant/edit', id]);
+  }
+
+  confirmDelete(restaurant: Restaurant) {
+    this.restaurantToDelete = restaurant;
+    this.showDeleteDialog = true;
+  }
+
+  cancelDelete() {
+    this.showDeleteDialog = false;
+    this.restaurantToDelete = null;
+    this.isDeleting = false;
+  }
+
+  deleteRestaurant() {
+    if (!this.restaurantToDelete) return;
+
+    this.isDeleting = true;
+    this.errorMessage = null;
+
+    const id = this.restaurantToDelete.id;
+
+    this.restaurantService.deleteRestaurantWithFoodItems(id).subscribe({
+      next: () => {
+        this.isDeleting = false;
+        this.showDeleteDialog = false;
+        this.restaurantToDelete = null;
+        // Refresh the list
+        this.getAllRestaurants();
+        console.log('Restaurant deleted successfully');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isDeleting = false;
+        this.errorMessage = extractErrorMessage(err, 'Failed to delete restaurant. Please try again.');
+        console.error('Failed to delete restaurant:', err);
+        this.showDeleteDialog = false;
+        this.restaurantToDelete = null;
+      }
+    });
   }
 
   // Handle image loading error

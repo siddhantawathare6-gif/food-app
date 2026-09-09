@@ -3,6 +3,7 @@ package com.food.foodcatalogue.service;
 import com.food.foodcatalogue.dto.FoodCataloguePage;
 import com.food.foodcatalogue.dto.FoodItemDTO;
 import com.food.foodcatalogue.dto.Restaurant;
+import com.food.foodcatalogue.dto.RestaurantWithFoodItemsDTO;
 import com.food.foodcatalogue.entity.FoodItem;
 import com.food.foodcatalogue.exception.FoodCatalogueServiceException;
 import com.food.foodcatalogue.mapper.FoodItemMapper;
@@ -12,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodCatalogueService {
@@ -25,6 +28,9 @@ public class FoodCatalogueService {
 
     @Autowired
     CachedRestaurantService cachedRestaurantService;
+
+    @Autowired
+    RestaurantService restaurantService;
 
 
     public FoodItemDTO addFoodItem(FoodItemDTO foodItemDTO) {
@@ -78,4 +84,84 @@ public class FoodCatalogueService {
     private List<FoodItem> fetchFoodItemList(Integer restaurantId) {
         return foodItemRepo.findByRestaurantId(restaurantId);
     }
+
+    @Transactional
+    public RestaurantWithFoodItemsDTO addRestaurantWithFoodItems(RestaurantWithFoodItemsDTO request) {
+        log.info("Adding restaurant with food items - Restaurant: {}, Food items: {}",
+                request.getRestaurant().getName(),
+                request.getFoodItems() != null ? request.getFoodItems().size() : 0);
+
+        // Step 1: Create restaurant via Restaurant Service
+        Restaurant createdRestaurant = restaurantService.createRestaurant(request.getRestaurant());
+        log.info("Restaurant created with ID: {}", createdRestaurant.getId());
+
+        // Step 2: Save food items with restaurant ID
+        if (request.getFoodItems() != null && !request.getFoodItems().isEmpty()) {
+            List<FoodItemDTO> foodItems = request.getFoodItems().stream()
+                    .peek(item -> item.setRestaurantId(createdRestaurant.getId()))
+                    .collect(Collectors.toList());
+
+            List<FoodItem> foodItemsToSave = foodItems.stream()
+                    .map(FoodItemMapper.INSTANCE::mapFoodItemDTOToFoodItem)
+                    .collect(Collectors.toList());
+
+            List<FoodItem> savedItems = foodItemRepo.saveAll(foodItemsToSave);
+            log.info("Saved {} food items for restaurant ID: {}", savedItems.size(), createdRestaurant.getId());
+
+            request.setFoodItems(savedItems.stream()
+                    .map(FoodItemMapper.INSTANCE::mapFoodItemToFoodItemDto)
+                    .collect(Collectors.toList()));
+        }
+
+        request.setRestaurant(createdRestaurant);
+        return request;
+    }
+
+    @Transactional
+    public RestaurantWithFoodItemsDTO updateRestaurantWithFoodItems(Integer restaurantId, RestaurantWithFoodItemsDTO request) {
+        log.info("Updating restaurant with food items - Restaurant ID: {}", restaurantId);
+
+        // Step 1: Update restaurant via Restaurant Service
+        Restaurant updatedRestaurant = restaurantService.updateRestaurant(restaurantId, request.getRestaurant());
+        log.info("Restaurant updated with ID: {}", updatedRestaurant.getId());
+
+        // Step 2: Update food items
+        if (request.getFoodItems() != null) {
+            // Delete existing food items
+            foodItemRepo.deleteByRestaurantId(restaurantId);
+
+            // Save new food items
+            List<FoodItemDTO> foodItems = request.getFoodItems().stream()
+                    .peek(item -> item.setRestaurantId(restaurantId))
+                    .collect(Collectors.toList());
+
+            List<FoodItem> foodItemsToSave = foodItems.stream()
+                    .map(FoodItemMapper.INSTANCE::mapFoodItemDTOToFoodItem)
+                    .collect(Collectors.toList());
+
+            List<FoodItem> savedItems = foodItemRepo.saveAll(foodItemsToSave);
+            log.info("Updated {} food items for restaurant ID: {}", savedItems.size(), restaurantId);
+
+            request.setFoodItems(savedItems.stream()
+                    .map(FoodItemMapper.INSTANCE::mapFoodItemToFoodItemDto)
+                    .collect(Collectors.toList()));
+        }
+
+        request.setRestaurant(updatedRestaurant);
+        return request;
+    }
+
+    @Transactional
+    public void deleteRestaurantWithFoodItems(Integer restaurantId) {
+        log.info("Deleting restaurant with food items - Restaurant ID: {}", restaurantId);
+
+        // Step 1: Delete food items from Food Catalogue DB
+        foodItemRepo.deleteByRestaurantId(restaurantId);
+        log.info("Deleted food items for restaurant ID: {}", restaurantId);
+
+        // Step 2: Delete restaurant via Restaurant Service
+        restaurantService.deleteRestaurant(restaurantId);
+        log.info("Restaurant deleted with ID: {}", restaurantId);
+    }
+
 }

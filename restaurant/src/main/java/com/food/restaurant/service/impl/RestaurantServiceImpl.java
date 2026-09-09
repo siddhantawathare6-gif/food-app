@@ -8,7 +8,6 @@ import com.food.restaurant.mapper.RestaurantMapper;
 import com.food.restaurant.repository.RestaurantRepository;
 import com.food.restaurant.service.FileStorageService;
 import com.food.restaurant.service.RestaurantService;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,11 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,13 +136,13 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         // Clean up any previously stored image before saving the new one,
         // in case the file extension changed (e.g. .jpg replaced with .png)
-        if (restaurant.getImageName() != null) {
-            fileStorageService.deleteFile(restaurant.getImageName());
+        if (restaurant.getImageUrl() != null) {
+            fileStorageService.deleteFile(restaurant.getImageUrl());
         }
 
         String fileName = fileStorageService.storeFile(restaurantId, file);
 
-        restaurant.setImageName(fileName);
+        restaurant.setImageUrl(fileName);
         restaurantRepository.save(restaurant);
 
         log.info("Image uploaded successfully for restaurantId: {}, fileName: {}", restaurantId, fileName);
@@ -163,11 +157,57 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId));
 
-        if (restaurant.getImageName() == null) {
+        if (restaurant.getImageUrl() == null) {
             log.warn("No image uploaded yet for restaurant {}, returning default", restaurantId);
             return fileStorageService.readFile("default.jpg");
         }
 
-        return fileStorageService.readFile(restaurant.getImageName());
+        return fileStorageService.readFile(restaurant.getImageUrl());
     }
+
+    @Override
+    @CacheEvict(value = {"restaurant", "restaurantPage"}, allEntries = true)
+    public RestaurantDTO updateRestaurant(Integer id, RestaurantDTO restaurantDTO) {
+        log.info("Updating restaurant - id={}, name='{}'", id, restaurantDTO.getName());
+
+        // Check if restaurant exists
+        Restaurant existingRestaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + id));
+
+        // Update fields
+        existingRestaurant.setName(restaurantDTO.getName());
+        existingRestaurant.setAddress(restaurantDTO.getAddress());
+        existingRestaurant.setCity(restaurantDTO.getCity());
+        existingRestaurant.setRestaurantDescription(restaurantDTO.getRestaurantDescription());
+
+        // Don't update imageName here - image upload has separate endpoint
+        // Don't update rating/reviewCount here - they come from order service
+
+        Restaurant updatedRestaurant = restaurantRepository.save(existingRestaurant);
+        log.info("Restaurant updated successfully - id={}", updatedRestaurant.getId());
+
+        RestaurantDTO savedDTO = RestaurantMapper.INSTANCE.mapRestaurantToRestaurantDTO(updatedRestaurant);
+        savedDTO.setImageUrl(baseImageUrl + "/" + updatedRestaurant.getId());
+        return savedDTO;
+    }
+
+    // ========== NEW: Delete Restaurant ==========
+    @Override
+    @CacheEvict(value = {"restaurant", "restaurantPage"}, allEntries = true)
+    public void deleteRestaurant(Integer id) {
+        log.info("Deleting restaurant - id={}", id);
+
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + id));
+
+        // Delete image if exists
+        if (restaurant.getImageUrl() != null) {
+            fileStorageService.deleteFile(restaurant.getImageUrl());
+        }
+
+        // Delete restaurant
+        restaurantRepository.deleteById(id);
+        log.info("Restaurant deleted successfully - id={}", id);
+    }
+
 }

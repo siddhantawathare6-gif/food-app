@@ -1,5 +1,5 @@
 INSERT IGNORE INTO restaurantdb.restaurant
-(id, address, city, name, restaurant_description, rating, review_count, image_name) VALUES
+(id, address, city, name, restaurant_description, rating, review_count, image_url) VALUES
 (1, '12 MG Road', 'Pune', 'Ravi Kulkarni', 'Cozy rooftop café known for wood-fired pizzas and craft coffee', 4.5, 1200, '1.jpg'),
 (2, '45 Park Street', 'Kolkata', 'Anjali Mehta', 'Family-run Bengali kitchen serving traditional fish curries', 4.7, 850, '2.jpg'),
 (3, '78 Sector 17', 'Chandigarh', 'Karan Verma', 'Modern fusion diner blending Punjabi flavors with continental plating', 4.3, 650, '3.jpg'),

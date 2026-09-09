@@ -2,6 +2,7 @@ package com.food.foodcatalogue.controller;
 
 import com.food.foodcatalogue.dto.FoodCataloguePage;
 import com.food.foodcatalogue.dto.FoodItemDTO;
+import com.food.foodcatalogue.dto.RestaurantWithFoodItemsDTO;
 import com.food.foodcatalogue.service.FoodCatalogueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +56,33 @@ public class FoodCatalogueController {
 
         log.info("fetch restaurant details with food menu {}", foodCataloguePage);
         return new ResponseEntity<>(foodCataloguePage, HttpStatus.OK);
-
-
     }
 
+    @PostMapping("/addRestaurantWithFoodItems")
+    public ResponseEntity<RestaurantWithFoodItemsDTO> addRestaurantWithFoodItems(
+            @RequestBody RestaurantWithFoodItemsDTO request) {
+        log.info("POST /foodCatalogue/addRestaurantWithFoodItems - Restaurant: {}",
+                request.getRestaurant().getName());
+        RestaurantWithFoodItemsDTO response = foodCatalogueService.addRestaurantWithFoodItems(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
+    // ========== NEW: Update Restaurant with Food Items ==========
+    @PutMapping("/updateRestaurantWithFoodItems/{restaurantId}")
+    public ResponseEntity<RestaurantWithFoodItemsDTO> updateRestaurantWithFoodItems(
+            @PathVariable Integer restaurantId,
+            @RequestBody RestaurantWithFoodItemsDTO request) {
+        log.info("PUT /foodCatalogue/updateRestaurantWithFoodItems/{}", restaurantId);
+        RestaurantWithFoodItemsDTO response = foodCatalogueService.updateRestaurantWithFoodItems(restaurantId, request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // ========== NEW: Delete Restaurant with Food Items ==========
+    @DeleteMapping("/deleteRestaurantWithFoodItems/{restaurantId}")
+    public ResponseEntity<Void> deleteRestaurantWithFoodItems(@PathVariable Integer restaurantId) {
+        log.info("DELETE /foodCatalogue/deleteRestaurantWithFoodItems/{}", restaurantId);
+        foodCatalogueService.deleteRestaurantWithFoodItems(restaurantId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }

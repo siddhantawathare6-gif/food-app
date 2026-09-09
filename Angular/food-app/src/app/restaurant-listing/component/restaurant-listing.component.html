@@ -1,40 +1,41 @@
-<main class="main-content my-gap">
-
+<main class="main-content">
+  <!-- Error Banner -->
   <div class="error-banner" *ngIf="errorMessage">
+    <i class="fa fa-exclamation-circle"></i>
     {{ errorMessage }}
   </div>
 
-  <!-- ADD THIS: Admin actions section -->
+  <!-- Admin Actions -->
   <div class="admin-actions" *ngIf="isAdmin">
     <button class="btn-add-restaurant" (click)="navigateToAddRestaurant()">
       <i class="fa fa-plus"></i> Add New Restaurant
     </button>
   </div>
 
+  <!-- Restaurant Grid -->
   <div class="restaurant-grid">
     <div class="restaurant-card" *ngFor="let restaurant of restaurantList">
+      <!-- Image -->
       <div class="restaurant-image">
-        <!-- Load image from backend using the image name -->
         <img 
           [src]="getImageUrl(restaurant.id)" 
           [alt]="restaurant.name"
           (error)="onImageError($event)">
       </div>
+      
+      <!-- Details -->
       <div class="restaurant-details">
-        <h3 class="restaurant-name">{{restaurant.name}}</h3>
-        <!-- Restaurant Description (optional) -->
+        <h3 class="restaurant-name">{{ restaurant.name }}</h3>
+        
         <p class="restaurant-description" *ngIf="restaurant.restaurantDescription">
-          {{ restaurant.restaurantDescription | slice:0:60 }}{{ restaurant.restaurantDescription.length > 60 ? '...' : '' }}
+          {{ restaurant.restaurantDescription | slice:0:80 }}{{ restaurant.restaurantDescription.length > 80 ? '...' : '' }}
         </p>
-        <!-- <div class="restaurant-rating">
-          <span class="rating"><i class="fa fa-star"></i>4.5</span>
-          <span class="rating-count">(500+)</span>
-        </div> -->
-        <!-- Rating and Review Count from backend -->
+        
+        <!-- Rating -->
         <div class="restaurant-rating">
           <span class="rating" [style.color]="getRatingColor(restaurant.rating)">
             <i class="fa fa-star"></i> 
-            {{ restaurant.rating ? restaurant.rating.toFixed(1) : 'No rating' }}
+            {{ restaurant.rating ? restaurant.rating.toFixed(1) : 'New' }}
           </span>
           <span class="rating-stars" [style.color]="getRatingColor(restaurant.rating)">
             {{ getRatingStars(restaurant.rating) }}
@@ -42,21 +43,39 @@
           <span class="rating-count" *ngIf="restaurant.reviewCount">
             ({{ restaurant.reviewCount }} review{{ restaurant.reviewCount > 1 ? 's' : '' }})
           </span>
-          <span class="rating-count" *ngIf="!restaurant.reviewCount || restaurant.reviewCount === 0">
+          <span class="rating-count" *ngIf="!restaurant.reviewCount">
             (No reviews yet)
           </span>
         </div>
-        <!-- City and Address -->
+        
+        <!-- Location -->
         <div class="restaurant-location">
-          <span class="city"><i class="fa fa-map-marker"></i> {{ restaurant.city }}</span>
+          <i class="fa fa-map-marker-alt" style="color: #dc3545;"></i>
+          <span class="city">{{ restaurant.city }}</span>
           <span class="address" *ngIf="restaurant.address">, {{ restaurant.address }}</span>
         </div>
-        <button class="order-btn" (click)="onButtonClick(restaurant.id)">Order Now</button>
+        
+        <!-- Buttons -->
+        <div class="button-group">
+          <button class="order-btn" (click)="onButtonClick(restaurant.id)">
+            <i class="fa fa-cutlery"></i> Order Now
+          </button>
+          
+          <!-- Admin Actions: Edit & Delete -->
+          <div class="admin-actions-buttons" *ngIf="isAdmin">
+            <button class="btn-edit" (click)="navigateToEditRestaurant(restaurant.id)" title="Edit Restaurant">
+              <i class="fa fa-edit"></i> Edit
+            </button>
+            <button class="btn-delete" (click)="confirmDelete(restaurant)" title="Delete Restaurant">
+              <i class="fa fa-trash"></i>Delete
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-
+  <!-- Pagination -->
   <div class="pagination-container">
     <div class="page-size-selector">
       <label for="pageSize">Items per page:</label>
@@ -64,17 +83,53 @@
         <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
       </select>
     </div>
+    
     <div class="pagination-controls">
-      <button (click)="prevPage()" [disabled]="currentPage === 0">Prev</button>
-      <button *ngFor="let page of getPageNumbers()" (click)="goToPage(page)" [class.active]="page === currentPage">
+      <!-- Prev Button -->
+      <button (click)="prevPage()" [disabled]="currentPage === 0">
+        <i class="fa fa-chevron-left"></i> Prev
+      </button>
+      
+      <!-- Page Numbers -->
+      <button 
+        *ngFor="let page of getPageNumbers()" 
+        (click)="goToPage(page)" 
+        [class.active]="page === currentPage">
         {{ page + 1 }}
       </button>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1">Next</button>
+      
+      <!-- Next Button -->
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
+        Next <i class="fa fa-chevron-right"></i>
+      </button>
     </div>
+    
     <div class="page-info">
       Page {{ currentPage + 1 }} of {{ totalPages }}
     </div>
   </div>
-
-
 </main>
+
+<!-- Delete Confirmation Dialog -->
+<div class="dialog-overlay" *ngIf="showDeleteDialog">
+  <div class="dialog-box">
+    <div class="dialog-icon">
+      <i class="fa fa-exclamation-triangle"></i>
+    </div>
+    <h3>Delete Restaurant</h3>
+    <p>Are you sure you want to delete <strong>"{{ restaurantToDelete?.name }}"</strong>?</p>
+    <p class="warning">
+      <i class="fa fa-info-circle"></i> 
+      This will permanently delete the restaurant and all its food items.
+    </p>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="isDeleting">
+        Cancel
+      </button>
+      <button class="btn btn-danger" (click)="deleteRestaurant()" [disabled]="isDeleting">
+        <i class="fa" [ngClass]="isDeleting ? 'fa-spinner fa-spin' : 'fa-trash'"></i>
+        {{ isDeleting ? 'Deleting...' : 'Delete' }}
+      </button>
+    </div>
+  </div>
+</div>
