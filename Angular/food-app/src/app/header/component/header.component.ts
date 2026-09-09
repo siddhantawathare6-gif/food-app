@@ -87,7 +87,7 @@ export class HeaderComponent {
   navigateToProfile() {
     this.isDropdownOpen = false;
     // Navigate to profile page when implemented
-    // this.router.navigate(['/profile']);
+    this.router.navigate(['/profile']);
   }
 
   navigateToOrders() {

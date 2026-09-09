@@ -21,6 +21,7 @@ export class RegisterComponent {
   errorMessage: string = '';
   returnUrl: string = '/';
   returnParams: any = {};
+  mobileNumber: string = '';
 
   constructor(
     private authService: AuthService,
@@ -38,11 +39,20 @@ export class RegisterComponent {
 
   onRegister() {
     this.errorMessage = '';
+    if (!this.mobileNumber) {
+      this.errorMessage = 'Mobile number is required.';
+      return;
+    }
+    if (!/^[0-9]{10}$/.test(this.mobileNumber)) {
+      this.errorMessage = 'Mobile number must be 10 digits.';
+      return;
+    }
     this.authService.register({
       name: this.name,
       username: this.username,
       email: this.email,
-      password: this.password
+      password: this.password,
+      mobileNumber: this.mobileNumber
     }).subscribe({
       next: () => {
         // Registration succeeded but does NOT log the user in — send them to login next

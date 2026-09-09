@@ -7,6 +7,7 @@ import { RegisterComponent } from './auth/register/register.component';
 import { AddRestaurantComponent } from './restaurant/add-restaurant/add-restaurant.component';
 import { EditRestaurantComponent } from './restaurant/edit-restaurant/edit-restaurant.component';
 import { RestaurantListingComponent } from './restaurant/restaurant-listing/restaurant-listing.component';
+import { ProfileComponent } from './profile/profile.component';
 
 export const routes: Routes = [
     { path: '', component: RestaurantListingComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'restaurant/add', component: AddRestaurantComponent },
-    { path: 'restaurant/edit/:id', component: EditRestaurantComponent }
+    { path: 'restaurant/edit/:id', component: EditRestaurantComponent },
+    { path: 'profile', component: ProfileComponent }
 
 ];

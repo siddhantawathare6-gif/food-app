@@ -105,12 +105,20 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyRegisterException(HttpStatus.BAD_REQUEST, "Username already exists!.");
         }
 
+        log.debug("Checking if mobileNumber exists: {}", registerDTO.getUsername());
+        if (userRepository.existsByMobileNumber(registerDTO.getMobileNumber())) {
+            log.warn("Registration failed: Mobile number already exists: {}", registerDTO.getMobileNumber());
+            throw new UserAlreadyRegisterException(HttpStatus.BAD_REQUEST, "Mobile number already registered!.");
+        }
+
         log.debug("Creating user entity for: {}", registerDTO.getUsername());
         User user = new User();
         user.setName(registerDTO.getName());
         user.setEmail(registerDTO.getEmail());
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setMobileNumber(registerDTO.getMobileNumber());
+        user.setAlternateMobileNumber(null);
 
         Set<Role> roles = new HashSet<>();
         Role roleUser = roleRepository.findByName("ROLE_USER")

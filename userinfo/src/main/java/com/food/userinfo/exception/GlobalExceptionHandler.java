@@ -2,6 +2,7 @@ package com.food.userinfo.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -85,6 +86,39 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), "The requested resource was not found.",
                 webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+                                                                     WebRequest webRequest) {
+        log.error("Data integrity violation: {}", ex.getMessage());
+
+        String message = "Database constraint violation";
+        Throwable rootCause = ex.getRootCause();
+
+        if (rootCause != null) {
+            String rootMessage = rootCause.getMessage();
+            if (rootMessage != null) {
+                if (rootMessage.contains("mobileNumber")) {
+                    message = "Mobile number already registered. Please use a different number.";
+                } else if (rootMessage.contains("alternateMobileNumber")) {
+                    message = "Alternate mobile number already registered. Please use a different number.";
+                } else if (rootMessage.contains("username")) {
+                    message = "Username already exists. Please choose a different username.";
+                } else if (rootMessage.contains("email")) {
+                    message = "Email already exists. Please use a different email.";
+                } else if (rootMessage.contains("not null") && rootMessage.contains("mobileNumber")) {
+                    message = "Mobile number is required. Please provide a mobile number.";
+                }
+            }
+        }
+
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(),
+                message,
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

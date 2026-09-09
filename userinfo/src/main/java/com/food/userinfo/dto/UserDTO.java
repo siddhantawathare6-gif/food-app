@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -17,6 +18,10 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
+    private String mobileNumber;
+    private String alternateMobileNumber;
     private Set<Role> roles;
+
+    private AddressDTO address;
 
 }

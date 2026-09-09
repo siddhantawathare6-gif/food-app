@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -17,12 +18,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
     private String username;
-    @Column(nullable = false, unique = true)
-    private String email;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String email;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String mobileNumber;
+    @Column(unique = true)
+    private String alternateMobileNumber;
+
+    @Embedded
+    private Address address;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_roles",  // Join table name
@@ -31,5 +43,15 @@ public class User {
     )
     private Set<Role> roles;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
 }
