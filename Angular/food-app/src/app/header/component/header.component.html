@@ -1,13 +1,75 @@
 <header class="header">
-    <div class="header-container">
-      <h1 class="header-logo">Siddhant's Food Delivery</h1>
-      <nav class="header-nav">
-        <div class="user-avatar">
-            <img src="assets/avatar-pics/avatar.jpg" alt="User Avatar">
-            <span class="username" *ngIf="username">Hey {{ username }}</span>
-            <span class="username" *ngIf="!username">Hey User</span>
-            <button class="logout-btn" *ngIf="username" (click)="logout()">Logout</button>
+  <div class="header-container">
+    <h1 class="header-logo" (click)="goHome()">Siddhant's Food Delivery</h1>
+    <nav class="header-nav">
+      <div class="user-profile">
+        <!-- User Avatar with Dropdown -->
+        <div class="user-avatar" (click)="toggleDropdown()">
+          <img 
+            [src]="getAvatarImage()" 
+            alt="User Avatar"
+            class="avatar-img"
+            (error)="onAvatarError($event)">
+          <span class="username" *ngIf="username">Hey {{ username }}</span>
+          <span class="username" *ngIf="!username">User</span>
+          <i class="fa fa-chevron-down dropdown-arrow" [class.rotated]="isDropdownOpen"></i>
         </div>
-      </nav>
-    </div>
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" *ngIf="isDropdownOpen">
+          <!-- When User is Logged In -->
+          <div *ngIf="username" class="dropdown-content">
+            <div class="dropdown-header">
+              <img 
+                [src]="getAvatarImage()" 
+                alt="User Avatar" 
+                class="dropdown-avatar"
+                (error)="onAvatarError($event)">
+              <div class="dropdown-user-info">
+                <span class="dropdown-username">{{ username }}</span>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="navigateToProfile()">
+              <i class="fa fa-user"></i> My Profile
+            </a>
+            <a class="dropdown-item" (click)="navigateToOrders()">
+              <i class="fa fa-shopping-bag"></i> My Orders
+            </a>
+            <a class="dropdown-item" (click)="navigateToFavorites()">
+              <i class="fa fa-heart"></i> Favorites
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item logout-item" (click)="logout()">
+              <i class="fa fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
+
+          <!-- When User is NOT Logged In -->
+          <div *ngIf="!username" class="dropdown-content">
+            <div class="dropdown-header guest-header">
+              <div class="guest-avatar">
+                <img 
+                  src="assets/avatar-pics/default-avatar.png" 
+                  alt="Default Avatar"
+                  class="guest-avatar-img"
+                  (error)="onAvatarError($event)">
+              </div>
+              <div class="dropdown-user-info">
+                <span class="dropdown-username">Welcome, User!</span>
+                <span class="dropdown-email">Please login to continue</span>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item login-item" (click)="navigateToLogin()">
+              <i class="fa fa-sign-in-alt"></i> Login
+            </a>
+            <a class="dropdown-item register-item" (click)="navigateToRegister()">
+              <i class="fa fa-user-plus"></i> Register
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
 </header>
