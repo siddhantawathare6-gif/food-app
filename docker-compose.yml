@@ -72,10 +72,13 @@ services:
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
       # JWT_SECRET: ${JWT_SECRET}
+      REDIS_HOST: redis
     depends_on:
       eureka:
         condition: service_healthy
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - food-app-network
@@ -93,6 +96,7 @@ services:
       MONGODB_URI: mongodb://mongo-db:27017/order_db
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      REDIS_HOST: redis
     depends_on:
       eureka:
         condition: service_healthy
@@ -102,6 +106,8 @@ services:
         condition: service_started
       logstash:
         condition: service_started
+      redis:
+        condition: service_healthy
     networks:
       - food-app-network
 
@@ -110,6 +116,8 @@ services:
     image: siddhant9960/fa-restaurant-service:0.0.1
     container_name: restaurant-service
     restart: unless-stopped
+    volumes:
+      - ./restaurant/uploads/restaurants:/app/uploads/restaurants 
     ports:
       - "9091:9091"
     environment:
@@ -120,6 +128,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: system@123
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      REDIS_HOST: redis
     depends_on:
       eureka:
         condition: service_healthy
@@ -145,6 +154,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: system@123
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      REDIS_HOST: redis
     depends_on:
       eureka:
         condition: service_healthy
@@ -154,6 +164,8 @@ services:
         condition: service_started
       logstash:
         condition: service_started
+      redis:
+        condition: service_healthy
     networks:
       - food-app-network
 

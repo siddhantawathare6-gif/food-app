@@ -14,6 +14,17 @@ spring:
                 allowed-methods: "*"
                 allowed-headers: "*"
           routes:
+            - id: restaurant-images
+              uri: lb://RESTAURANT-SERVICE
+              predicates:
+                - Path=/restaurant/image/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: 50
+                    redis-rate-limiter.burstCapacity: 100
+
             - id: userinfo-service
               uri: lb://USER-SERVICE
               predicates:
