@@ -1,6 +1,5 @@
 package com.food.restaurant.controller;
 
-
 import com.food.restaurant.dto.RestaurantDTO;
 import com.food.restaurant.dto.RestaurantPageDto;
 import com.food.restaurant.service.RestaurantService;
@@ -16,8 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +27,9 @@ public class RestaurantControllerTest {
     @Mock
     RestaurantService restaurantService;
 
+    // ============================================================
+    // ===== fetchAllRestaurant =====
+    // ============================================================
 
     @Test
     public void testFetchAllRestaurant() {
@@ -37,8 +38,23 @@ public class RestaurantControllerTest {
         String sortBy = "id";
         String sortDir = "asc";
 
-        List<RestaurantDTO> restaurantList = Arrays.asList(new RestaurantDTO(1, "Taj", "Mumbai street, 102", "Mumbai", "family village taste"),
-                new RestaurantDTO(2, "Sidd", "Red street, 203", "USA", "multi causin"));
+        // FIXED: Use no-args constructor + setters
+        RestaurantDTO r1 = new RestaurantDTO();
+        r1.setId(1);
+        r1.setName("Taj");
+        r1.setAddress("Mumbai street, 102");
+        r1.setCity("Mumbai");
+        r1.setRestaurantDescription("family village taste");
+
+        RestaurantDTO r2 = new RestaurantDTO();
+        r2.setId(2);
+        r2.setName("Sidd");
+        r2.setAddress("Red street, 203");
+        r2.setCity("USA");
+        r2.setRestaurantDescription("multi causin");
+
+        List<RestaurantDTO> restaurantList = Arrays.asList(r1, r2);
+
         RestaurantPageDto restaurantPageDto = new RestaurantPageDto();
         restaurantPageDto.setRestaurantList(restaurantList);
         restaurantPageDto.setLast(true);
@@ -47,16 +63,16 @@ public class RestaurantControllerTest {
         restaurantPageDto.setTotalElement(2);
         restaurantPageDto.setTotalPage(1);
 
-        // Mock the service
         when(restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir))
                 .thenReturn(restaurantPageDto);
 
-        ResponseEntity<RestaurantPageDto> response = restaurantController.fetchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
+        ResponseEntity<RestaurantPageDto> response =
+                restaurantController.fetchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(restaurantPageDto, response.getBody());
-
-        verify(restaurantService, times(1)).featchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
-
+        verify(restaurantService, times(1))
+                .featchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
     }
 
     @Test
@@ -74,50 +90,107 @@ public class RestaurantControllerTest {
         when(restaurantService.featchAllRestaurant(pageNo, pageSize, sortBy, sortDir))
                 .thenReturn(emptyPageDto);
 
-        ResponseEntity<RestaurantPageDto> response = restaurantController.fetchAllRestaurant(
-                pageNo, pageSize, sortBy, sortDir);
+        ResponseEntity<RestaurantPageDto> response =
+                restaurantController.fetchAllRestaurant(pageNo, pageSize, sortBy, sortDir);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertTrue(response.getBody().getRestaurantList().isEmpty());
         assertEquals(0, response.getBody().getTotalElement());
     }
 
+    // ============================================================
+    // ===== saveRestaurant =====
+    // ============================================================
 
     @Test
     public void saveRestaurant() {
-        RestaurantDTO request = new RestaurantDTO(1, "Taj", "Mumbai street, 102", "Mumbai", "family village taste");
+        RestaurantDTO request = new RestaurantDTO();
+        request.setId(1);
+        request.setName("Taj");
+        request.setAddress("Mumbai street, 102");
+        request.setCity("Mumbai");
+        request.setRestaurantDescription("family village taste");
 
-        when(restaurantService.addRestaurant(request)).thenReturn(new RestaurantDTO(1, "Taj", "Mumbai street, 102",
-                "Mumbai", "family village taste"));
+        RestaurantDTO saved = new RestaurantDTO();
+        saved.setId(1);
+        saved.setName("Taj");
+        saved.setAddress("Mumbai street, 102");
+        saved.setCity("Mumbai");
+        saved.setRestaurantDescription("family village taste");
+
+        when(restaurantService.addRestaurant(request)).thenReturn(saved);
 
         ResponseEntity<RestaurantDTO> response = restaurantController.saveRestaurant(request);
+
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(request, response.getBody());
-
+        assertEquals(saved, response.getBody());
         verify(restaurantService, times(1)).addRestaurant(request);
-
     }
+
+    // ============================================================
+    // ===== fetchRestaurantById =====
+    // ============================================================
 
     @Test
     public void testFindRestaurantById() {
-        // Create a mock restaurant ID
         Integer mockRestaurantId = 1;
 
-        // Create a mock restaurant to be returned by the service
-        RestaurantDTO mockRestaurant = new RestaurantDTO(1, "Restaurant 1", "Address 1", "city 1", "Desc 1");
+        RestaurantDTO mockRestaurant = new RestaurantDTO();
+        mockRestaurant.setId(1);
+        mockRestaurant.setName("Restaurant 1");
+        mockRestaurant.setAddress("Address 1");
+        mockRestaurant.setCity("city 1");
+        mockRestaurant.setRestaurantDescription("Desc 1");
 
-        // Mock the service behavior
         when(restaurantService.fetchRestaurantById(mockRestaurantId)).thenReturn(mockRestaurant);
 
-        // Call the controller method
-        ResponseEntity<RestaurantDTO> response = restaurantController.fetchRestaurantById(mockRestaurantId);
+        ResponseEntity<RestaurantDTO> response =
+                restaurantController.fetchRestaurantById(mockRestaurantId);
 
-        // Verify the response
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockRestaurant, response.getBody());
-
-        // Verify that the service method was called
         verify(restaurantService, times(1)).fetchRestaurantById(mockRestaurantId);
     }
 
+    // ============================================================
+    // ===== NEW: updateRestaurant =====
+    // ============================================================
+
+    @Test
+    public void testUpdateRestaurant() {
+        Integer id = 1;
+        RestaurantDTO updateDto = new RestaurantDTO();
+        updateDto.setName("Updated Name");
+        updateDto.setCity("Updated City");
+
+        RestaurantDTO updated = new RestaurantDTO();
+        updated.setId(id);
+        updated.setName("Updated Name");
+        updated.setCity("Updated City");
+
+        when(restaurantService.updateRestaurant(id, updateDto)).thenReturn(updated);
+
+        ResponseEntity<RestaurantDTO> response =
+                restaurantController.updateRestaurant(id, updateDto);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(updated, response.getBody());
+        verify(restaurantService).updateRestaurant(id, updateDto);
+    }
+
+    // ============================================================
+    // ===== NEW: deleteRestaurant =====
+    // ============================================================
+
+    @Test
+    public void testDeleteRestaurant() {
+        Integer id = 1;
+        doNothing().when(restaurantService).deleteRestaurant(id);
+
+        ResponseEntity<Void> response = restaurantController.deleteRestaurant(id);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(restaurantService).deleteRestaurant(id);
+    }
 }

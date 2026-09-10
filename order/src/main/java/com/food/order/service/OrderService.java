@@ -100,7 +100,7 @@ public class OrderService {
     public OrderDTO getOrderById(Integer orderId) {
         log.info("Fetching order by orderId: {}", orderId);
 
-        Order order = orderRepo.findById(orderId)
+        Order order = orderRepo.findByOrderId(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
 
         log.info("Order found - orderId: {}, status: {}, total: {}", order.getOrderId(), order.getStatus(), order.getTotalAmount());

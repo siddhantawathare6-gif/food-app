@@ -1,4 +1,4 @@
-/* ===== MAIN CONTAINER - SCROLLABLE ===== */
+/* order-summary.component.css */
 :host {
   display: block;
   height: calc(100vh - 70px);
