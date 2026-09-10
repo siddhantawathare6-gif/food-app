@@ -93,7 +93,7 @@ export class HeaderComponent {
   navigateToOrders() {
     this.isDropdownOpen = false;
     // Navigate to orders page when implemented
-    // this.router.navigate(['/orders']);
+    this.router.navigate(['/orders']);
   }
 
   navigateToFavorites() {

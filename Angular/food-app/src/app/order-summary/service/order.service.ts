@@ -33,7 +33,7 @@ export class OrderService {
     headers = headers.set('Content-Type', 'application/json');
 
     console.log('Sending order with headers:', headers);
-    console.log('Order data:', data);
+    console.log('Saving order with data:', data);
 
     return this.http.post<any>(`${this.baseUrl}/order/saveOrder`, data, { headers })
       .pipe(
@@ -45,6 +45,50 @@ export class OrderService {
   //   console.error('An error occurred:', error);
   //   return throwError(error.message || error);
   // }
+
+  getOrderHistory(userId: number): Observable<any[]> {
+    const token = localStorage.getItem('authToken');
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    console.log('Fetching order history for userId:', userId);
+    return this.http.get<any[]>(`${this.baseUrl}/order/history/${userId}`, { headers });
+  }
+
+  getOrderById(orderId: number): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    console.log('Fetching order details for orderId:', orderId);
+    return this.http.get<any>(`${this.baseUrl}/order/${orderId}`, { headers });
+  }
+
+  cancelOrder(orderId: number): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    console.log('Cancelling order:', orderId);
+    return this.http.put<any>(`${this.baseUrl}/order/cancel/${orderId}`, {}, { headers });
+  }
+
+  getOrdersByStatus(status: string): Observable<any[]> {
+    const token = localStorage.getItem('authToken');
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    console.log('Fetching orders by status:', status);
+    return this.http.get<any[]>(`${this.baseUrl}/order/status/${status}`, { headers });
+  }
 
   private handleError(error: any) {
     console.error('Order Service Error:', error);

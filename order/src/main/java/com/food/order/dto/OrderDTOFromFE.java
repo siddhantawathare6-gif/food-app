@@ -15,4 +15,9 @@ public class OrderDTOFromFE {
     private Integer userId;
     private Restaurant restaurant;
 
+    private String deliveryAddress;
+    private String paymentMethod;
+    private Double totalAmount;
+    private String deliveryInstructions;
+
 }

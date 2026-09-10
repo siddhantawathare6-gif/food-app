@@ -60,3 +60,9 @@ resilience4j:
 logging:
   level:
     io.github.resilience4j: DEBUG
+
+scheduler:
+  order:
+    status:
+      enabled: true
+      delay: 30000

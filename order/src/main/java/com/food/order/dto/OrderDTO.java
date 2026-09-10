@@ -16,4 +16,10 @@ public class OrderDTO {
     private Restaurant restaurant;
     private UserDTO userDTO;
 
+    private String status;
+    private String deliveryAddress;
+    private String paymentMethod;
+    private Double totalAmount;
+    private String deliveryInstructions;
+
 }

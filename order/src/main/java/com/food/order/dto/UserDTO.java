@@ -12,7 +12,7 @@ public class UserDTO {
     private Integer id;
     private String name;
     private String password;
-    private String address;
     private String city;
+    private AddressDTO address;
 
 }
