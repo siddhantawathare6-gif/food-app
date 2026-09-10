@@ -1,0 +1,159 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <!-- Header -->
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <img src="assets/avatar-pics/avatar.jpg" alt="Profile">
+      </div>
+      <h2>{{ user?.name || user?.username || 'User' }}</h2>
+      <p class="username">&#64;{{ user?.username || 'username' }}</p>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <i class="fa fa-spinner fa-spin"></i>
+      <span>Loading profile...</span>
+    </div>
+
+    <div class="success-message" *ngIf="successMessage">
+      <i class="fa fa-check-circle"></i> {{ successMessage }}
+    </div>
+    <div class="error-message" *ngIf="errorMessage">
+      <i class="fa fa-exclamation-circle"></i> {{ errorMessage }}
+    </div>
+
+    <div class="profile-body" *ngIf="!isLoading && user">
+
+      <!-- ===== VIEW MODE ===== -->
+      <ng-container *ngIf="!isEditing">
+        <div class="info-row">
+          <span class="label">Name</span>
+          <span class="value">{{ user?.name || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Username</span>
+          <span class="value">{{ user?.username || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Email</span>
+          <span class="value">{{ user?.email || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Mobile</span>
+          <span class="value">{{ user?.mobileNumber || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Alternate Mobile</span>
+          <span class="value">{{ user?.alternateMobileNumber || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Address</span>
+          <span class="value">
+            <ng-container *ngIf="user?.address?.addressLine1 || user?.address?.city">
+              {{ user?.address?.addressLine1 || '' }}
+              <span *ngIf="user?.address?.addressLine2"><br>{{ user?.address?.addressLine2 }}</span>
+              <span *ngIf="user?.address?.city"><br>{{ user?.address?.city }}</span>
+              <span *ngIf="user?.address?.state">, {{ user?.address?.state }}</span>
+              <span *ngIf="user?.address?.pincode"> - {{ user?.address?.pincode }}</span>
+              <span *ngIf="user?.address?.country"><br>{{ user?.address?.country }}</span>
+            </ng-container>
+            <span *ngIf="!user?.address?.addressLine1 && !user?.address?.city">-</span>
+          </span>
+        </div>
+      </ng-container>
+
+      <!-- ===== EDIT MODE ===== -->
+      <div class="edit-form" *ngIf="isEditing">
+        <h3>Edit Profile</h3>
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" [(ngModel)]="user.name" class="form-control" placeholder="Enter your name">
+        </div>
+
+        <div class="form-group disabled">
+          <label>Username (Cannot be changed)</label>
+          <input type="text" [value]="user?.username || ''" class="form-control" disabled>
+        </div>
+
+        <div class="form-group disabled">
+          <label>Email (Cannot be changed)</label>
+          <input type="email" [value]="user?.email || ''" class="form-control" disabled>
+        </div>
+
+        <div class="form-group disabled">
+          <label>Mobile Number (Cannot be changed)</label>
+          <input type="tel" [value]="user?.mobileNumber || ''" class="form-control" disabled>
+        </div>
+
+        <div class="form-group">
+          <label>Alternate Mobile Number</label>
+          <input type="tel" [(ngModel)]="user.alternateMobileNumber" class="form-control" placeholder="Enter alternate mobile number">
+        </div>
+
+        <div class="form-group">
+          <label>Address Line 1</label>
+          <input type="text" [(ngModel)]="user.address.addressLine1" class="form-control" placeholder="Enter address line 1">
+        </div>
+
+        <div class="form-group">
+          <label>Address Line 2</label>
+          <input type="text" [(ngModel)]="user.address.addressLine2" class="form-control" placeholder="Enter address line 2">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label>City</label>
+            <input type="text" [(ngModel)]="user.address.city" class="form-control" placeholder="Enter city">
+          </div>
+          <div class="form-group half">
+            <label>State</label>
+            <input type="text" [(ngModel)]="user.address.state" class="form-control" placeholder="Enter state">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label>Pincode</label>
+            <input type="text" [(ngModel)]="user.address.pincode" class="form-control" placeholder="Enter pincode">
+          </div>
+          <div class="form-group half">
+            <label>Country</label>
+            <input type="text" [(ngModel)]="user.address.country" class="form-control" placeholder="Enter country">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-actions" *ngIf="!isLoading && user">
+      <button class="btn-back" (click)="goBack()">
+        <i class="fa fa-arrow-left"></i> Back
+      </button>
+
+      <button class="btn-edit" *ngIf="!isEditing" (click)="toggleEdit()">
+        <i class="fa fa-edit"></i> Edit Profile
+      </button>
+
+      <div class="edit-actions" *ngIf="isEditing">
+        <button class="btn-cancel" (click)="toggleEdit()">
+          <i class="fa fa-times"></i> Cancel
+        </button>
+        <button class="btn-save" (click)="saveProfile()" [disabled]="isSaving">
+          <i class="fa" [ngClass]="isSaving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty state if no user data -->
+    <div class="empty-state" *ngIf="!isLoading && !user">
+      <p>No user data found</p>
+      <button class="btn-back" (click)="goBack()">Go Back</button>
+    </div>
+
+  </div>
+</div>

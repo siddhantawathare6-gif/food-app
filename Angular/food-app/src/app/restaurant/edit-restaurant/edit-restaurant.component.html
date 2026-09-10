@@ -1,0 +1,337 @@
+<div class="edit-restaurant-container">
+  <!-- ===== HEADER SECTION ===== -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon">
+          <i class="fa fa-pen"></i>
+        </div>
+        <div>
+          <h2>Edit Restaurant</h2>
+          <p class="subtitle">Update restaurant details and manage food items</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="badge-admin">Admin Only</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MESSAGES ===== -->
+  <div class="error-message" *ngIf="errorMessage">
+    <i class="fa fa-exclamation-circle"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="success-message" *ngIf="successMessage">
+    <i class="fa fa-check-circle"></i>
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <!-- ===== LOADING ===== -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <span>Loading restaurant data...</span>
+    </div>
+  </div>
+
+  <!-- ===== CONTENT ===== -->
+  <div *ngIf="isDataLoaded">
+    <!-- Current Image -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-header-icon">
+          <i class="fa fa-image"></i>
+        </div>
+        <div class="card-header-content">
+          <h3>Current Image</h3>
+          <span class="card-subtitle">Current restaurant cover image</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="current-image">
+          <img 
+            [src]="currentImageUrl" 
+            [alt]="restaurantData.name"
+            (error)="onImageError($event)">
+          <p class="image-label">Current Image</p>
+        </div>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #restaurantForm="ngForm" class="restaurant-form">
+
+      <!-- ===== RESTAURANT DETAILS ===== -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <i class="fa fa-building"></i>
+          </div>
+          <div class="card-header-content">
+            <h3>Restaurant Details</h3>
+            <span class="card-subtitle">Update basic information about the restaurant</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="name">Restaurant Name <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon"><i class="fa fa-store"></i></span>
+                <input
+                  type="text"
+                  id="name"
+                  [(ngModel)]="restaurantData.name"
+                  name="name"
+                  required
+                  class="form-control"
+                  placeholder="e.g., The Grand Kitchen"
+                  [class.is-invalid]="restaurantForm.submitted && !restaurantData.name">
+              </div>
+              <div class="invalid-feedback" *ngIf="restaurantForm.submitted && !restaurantData.name">
+                Restaurant name is required
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="city">City <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon"><i class="fa fa-map-marker-alt"></i></span>
+                <input
+                  type="text"
+                  id="city"
+                  [(ngModel)]="restaurantData.city"
+                  name="city"
+                  required
+                  class="form-control"
+                  placeholder="e.g., Mumbai"
+                  [class.is-invalid]="restaurantForm.submitted && !restaurantData.city">
+              </div>
+              <div class="invalid-feedback" *ngIf="restaurantForm.submitted && !restaurantData.city">
+                City is required
+              </div>
+            </div>
+            <div class="form-group half">
+              <label for="address">Address</label>
+              <div class="input-wrapper">
+                <span class="input-icon"><i class="fa fa-location-dot"></i></span>
+                <input
+                  type="text"
+                  id="address"
+                  [(ngModel)]="restaurantData.address"
+                  name="address"
+                  class="form-control"
+                  placeholder="e.g., 123, Main Street">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="description">Description</label>
+              <div class="input-wrapper textarea-wrapper">
+                <textarea
+                  id="description"
+                  [(ngModel)]="restaurantData.restaurantDescription"
+                  name="description"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Describe the restaurant, its cuisine, specialties, ambiance, etc."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== FOOD ITEMS ===== -->
+      <div class="form-card food-items-card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <i class="fa fa-utensils"></i>
+          </div>
+          <div class="card-header-content">
+            <h3>Food Menu</h3>
+            <span class="card-subtitle">Manage food items in your restaurant menu</span>
+          </div>
+          <button type="button" class="btn-toggle-food" (click)="toggleFoodItemsForm()">
+            <i class="fa" [ngClass]="showFoodItemsForm ? 'fa-minus' : 'fa-plus'"></i>
+            {{ showFoodItemsForm ? 'Hide Menu' : 'Add Items' }}
+          </button>
+        </div>
+
+        <div class="card-body" *ngIf="showFoodItemsForm">
+          <div class="food-items-container">
+            <div class="food-item" *ngFor="let item of foodItems; let i = index">
+              <div class="food-item-header">
+                <div class="food-item-number">
+                  <span class="badge">#{{ i + 1 }}</span>
+                  <span class="food-item-title">{{ item.itemName || 'Untitled Item' }}</span>
+                  <span class="food-item-price" *ngIf="item.price > 0">₹{{ item.price }}</span>
+                  <span class="food-item-id" *ngIf="item.id">ID: {{ item.id }}</span>
+                </div>
+                <div class="food-item-actions">
+                  <button type="button" class="btn-remove" (click)="removeFoodItem(i)">
+                    <i class="fa fa-trash"></i> Remove
+                  </button>
+                </div>
+              </div>
+
+              <div class="food-item-body">
+                <div class="form-row">
+                  <div class="form-group full-width">
+                    <label>Item Name <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <span class="input-icon"><i class="fa fa-utensil-spoon"></i></span>
+                      <input
+                        type="text"
+                        [(ngModel)]="item.itemName"
+                        [name]="'itemName' + i"
+                        class="form-control"
+                        placeholder="e.g., Butter Chicken"
+                        required>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group full-width">
+                    <label>Description</label>
+                    <div class="input-wrapper">
+                      <span class="input-icon"><i class="fa fa-align-left"></i></span>
+                      <input
+                        type="text"
+                        [(ngModel)]="item.itemDescription"
+                        [name]="'itemDesc' + i"
+                        class="form-control"
+                        placeholder="e.g., Tender chicken in creamy tomato sauce">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group third">
+                    <label>Price (₹) <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <span class="input-icon">₹</span>
+                      <input
+                        type="number"
+                        [(ngModel)]="item.price"
+                        [name]="'price' + i"
+                        class="form-control"
+                        placeholder="0"
+                        min="0"
+                        required>
+                    </div>
+                  </div>
+                  <div class="form-group third">
+                    <label>Quantity</label>
+                    <div class="input-wrapper">
+                      <span class="input-icon"><i class="fa fa-hashtag"></i></span>
+                      <input
+                        type="number"
+                        [(ngModel)]="item.quantity"
+                        [name]="'qty' + i"
+                        class="form-control"
+                        placeholder="1"
+                        min="1">
+                    </div>
+                  </div>
+                  <div class="form-group third">
+                    <label>Type</label>
+                    <div class="veg-toggle">
+                      <button
+                        type="button"
+                        class="veg-btn"
+                        [class.active]="item.isVeg"
+                        (click)="item.isVeg = true">
+                        <span class="veg-dot veg"></span> Veg
+                      </button>
+                      <button
+                        type="button"
+                        class="veg-btn"
+                        [class.active]="!item.isVeg"
+                        (click)="item.isVeg = false">
+                        <span class="veg-dot non-veg"></span> Non-Veg
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-actions-row">
+            <button type="button" class="btn-add-food" (click)="addFoodItem()">
+              <i class="fa fa-plus-circle"></i> Add Another Food Item
+            </button>
+          </div>
+          <p class="hint"><i class="fa fa-info-circle"></i> Fill at least one food item with name and price</p>
+        </div>
+      </div>
+
+      <!-- ===== IMAGE UPLOAD ===== -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <i class="fa fa-image"></i>
+          </div>
+          <div class="card-header-content">
+            <h3>Update Restaurant Image</h3>
+            <span class="card-subtitle">Upload a new cover image for your restaurant</span>
+          </div>
+          <span class="badge-optional">Optional</span>
+        </div>
+
+        <div class="card-body">
+          <div class="upload-area" (click)="fileInput.click()" *ngIf="!imagePreview">
+            <div class="upload-icon-wrapper">
+              <i class="fa fa-cloud-upload upload-icon"></i>
+            </div>
+            <p><strong>Click to upload</strong> or drag and drop</p>
+            <span>PNG, JPG up to 5MB</span>
+            <input
+              type="file"
+              #fileInput
+              id="image"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none;">
+          </div>
+
+          <div *ngIf="imagePreview" class="image-preview-container">
+            <div class="image-preview-wrapper">
+              <div class="image-preview">
+                <img [src]="imagePreview" alt="Restaurant preview">
+                <button type="button" class="btn-remove-image" (click)="selectedImage = null; imagePreview = null">
+                  <i class="fa fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="image-info">
+              <p class="image-name"><i class="fa fa-file-image"></i> {{ selectedImage?.name }}</p>
+              <small class="text-muted">Click remove to change image</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== FORM ACTIONS ===== -->
+      <div class="form-actions">
+        <button type="button" (click)="cancelEdit()" class="btn btn-cancel">
+          <i class="fa fa-arrow-left"></i> Cancel
+        </button>
+        <button type="button" (click)="goBack()" class="btn btn-reset">
+          <i class="fa fa-times"></i> Discard Changes
+        </button>
+        <button type="submit" [disabled]="isLoading || isImageUploading || !restaurantForm.valid" class="btn btn-primary">
+          <i class="fa" [ngClass]="isLoading || isImageUploading ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+          {{ isImageUploading ? 'Uploading...' : isLoading ? 'Saving...' : 'Update Restaurant' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+<div class="orders-container">
+  
+  <!-- Header -->
+  <div class="orders-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fa fa-arrow-left"></i> Back
+    </button>
+    <h2>My Orders</h2>
+  </div>
+
+  <!-- ===== ADD FILTER SECTION ===== -->
+  <div class="filter-section">
+    <label for="statusFilter">Filter by Status:</label>
+    <select id="statusFilter" [value]="selectedStatus" (change)="onStatusChange($event)">
+      <option *ngFor="let option of statusOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="successMessage">
+    <i class="fa fa-check-circle"></i> {{ successMessage }}
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    <i class="fa fa-exclamation-circle"></i> {{ errorMessage }}
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading your orders...</span>
+  </div>
+
+  <!-- Orders List -->
+  <div class="orders-list" *ngIf="!isLoading && !errorMessage">
+    
+    <!-- Order Cards -->
+    <div class="order-card" *ngFor="let order of orders">
+      <div class="order-header">
+        <div class="order-info">
+          <span class="order-id">Order #{{ order.orderId }}</span>
+          <span class="order-date">{{ order.createdAt | date:'medium' }}</span>
+        </div>
+        <span class="order-status" [class]="getStatusClass(order.status)">
+          {{ order.status || 'PENDING' }}
+        </span>
+      </div>
+
+      <div class="order-body">
+        <!-- Restaurant Info -->
+        <div class="restaurant-info">
+          <h4>{{ order.restaurant?.name }}</h4>
+          <p>{{ order.restaurant?.address }}, {{ order.restaurant?.city }}</p>
+        </div>
+
+        <!-- Order Items -->
+        <div class="order-items">
+          <div class="order-item" *ngFor="let item of order.foodItemsList">
+            <span class="item-name">{{ item.itemName }}</span>
+            <span class="item-qty">x{{ item.quantity }}</span>
+            <span class="item-price">₹{{ item.price }}</span>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary-row">
+          <div class="delivery-info">
+            <span><i class="fa fa-map-marker-alt"></i> {{ order.deliveryAddress || 'No address provided' }}</span>
+            <span *ngIf="order.paymentMethod"><i class="fa fa-credit-card"></i> {{ order.paymentMethod }}</span>
+          </div>
+          <div class="order-total">
+            <span class="total-label">Total:</span>
+            <span class="total-amount">₹{{ order.totalAmount }}</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="order-actions">
+          <button class="btn-view" (click)="viewOrder(order.orderId)">
+            <i class="fa fa-eye"></i> View Details
+          </button>
+          <button 
+            class="btn-cancel" 
+            *ngIf="order.status === 'PENDING' || order.status === 'CONFIRMED'"
+            (click)="cancelOrder(order.orderId)">
+            <i class="fa fa-times"></i> Cancel Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="orders.length === 0">
+      <i class="fa fa-shopping-bag empty-icon"></i>
+      <h3>No Orders Found</h3>
+      <p *ngIf="selectedStatus === 'ALL'">You haven't placed any orders yet. Start ordering now!</p>
+      <p *ngIf="selectedStatus !== 'ALL'">No orders found with status: {{ selectedStatus }}</p>
+      <button class="btn-browse" (click)="goBack()">Browse Restaurants</button>
+    </div>
+  </div>
+</div>
