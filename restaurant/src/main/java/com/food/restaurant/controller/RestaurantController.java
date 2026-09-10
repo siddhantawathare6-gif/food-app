@@ -80,6 +80,16 @@ public class RestaurantController {
         return ResponseEntity.ok(imageData);
     }
 
+    @GetMapping(value = "/image/default", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getDefaultImage() {
+        log.debug("GET /restaurant/image/default - Retrieving default image");
+        byte[] imageData = restaurantService.getDefaultImage();
+        if (imageData.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(imageData);
+    }
+
     @PutMapping("/updateRestaurant/{id}")
     public ResponseEntity<RestaurantDTO> updateRestaurant(
             @PathVariable Integer id,

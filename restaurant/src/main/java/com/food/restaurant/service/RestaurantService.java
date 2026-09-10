@@ -17,6 +17,8 @@ public interface RestaurantService {
 
     byte[] getRestaurantImage(Integer restaurantId);
 
+    byte[] getDefaultImage();
+
     RestaurantDTO updateRestaurant(Integer id, RestaurantDTO restaurantDTO);
 
     void deleteRestaurant(Integer id);

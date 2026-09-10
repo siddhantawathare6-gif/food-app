@@ -159,10 +159,20 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         if (restaurant.getImageUrl() == null) {
             log.warn("No image uploaded yet for restaurant {}, returning default", restaurantId);
-            return fileStorageService.readFile("default.jpg");
+            return getDefaultImage();
         }
 
         return fileStorageService.readFile(restaurant.getImageUrl());
+    }
+
+    @Override
+    public byte[] getDefaultImage() {
+        log.debug("Retrieving default image");
+        byte[] imageData = fileStorageService.readFile("default.jpg");
+        if (imageData.length == 0) {
+            log.warn("Default image 'default.jpg' not found in uploads directory");
+        }
+        return imageData;
     }
 
     @Override
