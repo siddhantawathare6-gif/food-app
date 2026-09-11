@@ -21,7 +21,7 @@ public class UserService {
     @Retry(name = "userServiceRetry", fallbackMethod = "fetchUserDetailsFallback")
     public UserDTO fetchUserDetailsFromUserId(Integer userId) {
         log.debug("Calling User Service for userId: {}", userId);
-        UserDTO userDTO = restTemplate.getForObject("http://USER-SERVICE/user/fetchUserById/" + userId, UserDTO.class);
+        UserDTO userDTO = restTemplate.getForObject("http://user-service/user/fetchUserById/" + userId, UserDTO.class);
 
         if (userDTO != null) {
             log.debug("User Service response - userId: {}, username: {}", userDTO.getId(), userDTO.getName());

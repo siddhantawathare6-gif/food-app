@@ -1,9 +1,11 @@
+server:
+  port: ${EUREKA_PORT:8761}
+
 spring:
   application:
-    name: eureka
-
-server:
-  port: 8761
+    name: ${APP_NAME:eureka}
+  config:
+    import: "optional:configserver:http://localhost:8888"
 
 eureka:
   client:

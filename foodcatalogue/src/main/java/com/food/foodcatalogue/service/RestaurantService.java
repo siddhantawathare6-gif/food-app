@@ -15,7 +15,7 @@ public class RestaurantService {
 
     private static final Logger log = LoggerFactory.getLogger(RestaurantService.class);
 
-    private static final String RESTAURANT_SERVICE_URL = "http://RESTAURANT-SERVICE/restaurant";
+    private static final String RESTAURANT_SERVICE_URL = "http://restaurant-service/restaurant";
 
     @Autowired
     RestTemplate restTemplate;
