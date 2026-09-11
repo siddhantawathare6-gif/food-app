@@ -138,11 +138,12 @@ PART 5: SEQUENCE DIAGRAMS
 
 1. Public request (login)
 
-<img width="5140" height="2247" alt="Public-request" src="https://github.com/user-attachments/assets/793f3662-81bb-45c0-bb96-fdda07b675d3" />
+<img width="5419" height="2841" alt="Public-login" src="https://github.com/user-attachments/assets/e864bc62-531c-4f30-b421-67c990c956b2" />
 
 2. Protected request (order history)
 
-<img width="4731" height="3105" alt="Protected-request " src="https://github.com/user-attachments/assets/52a66618-11d6-4ebd-9051-820a218132f4" />
+<img width="6738" height="2907" alt="Protected-order" src="https://github.com/user-attachments/assets/7d5cc45d-7acd-4fb5-b1cf-95c52f1bb44a" />
+
 
 3. Missing token → 401
 
@@ -154,7 +155,13 @@ PART 5: SEQUENCE DIAGRAMS
 
 5. Rate limiting key resolution
 
-<img width="3172" height="2478" alt="Rate-limiting" src="https://github.com/user-attachments/assets/a196444b-e403-4542-a951-190f57284cdb" />
+<img width="2885" height="2735" alt="Rate-limit" src="https://github.com/user-attachments/assets/05a834b4-bcac-4034-a571-e9046aa47a80" />
+
+<img width="3143" height="4713" alt="Key-resolution" src="https://github.com/user-attachments/assets/2f9eff93-dca0-4a73-9632-a7e2aef57fee" />
+
+6. Route Matching
+
+<img width="4787" height="2630" alt="Route-Matching" src="https://github.com/user-attachments/assets/cbe2a917-7e9a-45c7-8629-c02247601b42" />
 
 
 PART 6: CLASS DIAGRAM
