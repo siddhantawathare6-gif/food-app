@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="profile-header">
       <div class="profile-avatar">
-        <img src="assets/avatar-pics/avatar.jpg" alt="Profile">
+        <img [src]="getProfileAvatarUrl()" alt="Profile" (error)="onAvatarError($event)">
       </div>
       <h2>{{ user?.name || user?.username || 'User' }}</h2>
       <p class="username">&#64;{{ user?.username || 'username' }}</p>
@@ -70,6 +70,25 @@
       <div class="edit-form" *ngIf="isEditing">
         <h3>Edit Profile</h3>
 
+        <!-- ===== PROFILE PICTURE UPLOAD ===== -->
+        <div class="form-group">
+          <label>Profile Picture</label>
+
+          <div class="image-upload-row">
+            <input type="file" id="profileImage" accept="image/*" (change)="onFileSelected($event)">
+
+            <button type="button" class="btn-save" *ngIf="selectedImage" (click)="uploadProfileImage()"
+              [disabled]="isUploadingImage">
+              <i class="fa" [ngClass]="isUploadingImage ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+              {{ isUploadingImage ? 'Uploading...' : 'Upload' }}
+            </button>
+          </div>
+
+          <div class="image-preview" *ngIf="imagePreview">
+            <img [src]="imagePreview" alt="Preview">
+          </div>
+        </div>
+
         <div class="form-group">
           <label>Full Name</label>
           <input type="text" [(ngModel)]="user.name" class="form-control" placeholder="Enter your name">
@@ -92,17 +111,20 @@
 
         <div class="form-group">
           <label>Alternate Mobile Number</label>
-          <input type="tel" [(ngModel)]="user.alternateMobileNumber" class="form-control" placeholder="Enter alternate mobile number">
+          <input type="tel" [(ngModel)]="user.alternateMobileNumber" class="form-control"
+            placeholder="Enter alternate mobile number">
         </div>
 
         <div class="form-group">
           <label>Address Line 1</label>
-          <input type="text" [(ngModel)]="user.address.addressLine1" class="form-control" placeholder="Enter address line 1">
+          <input type="text" [(ngModel)]="user.address.addressLine1" class="form-control"
+            placeholder="Enter address line 1">
         </div>
 
         <div class="form-group">
           <label>Address Line 2</label>
-          <input type="text" [(ngModel)]="user.address.addressLine2" class="form-control" placeholder="Enter address line 2">
+          <input type="text" [(ngModel)]="user.address.addressLine2" class="form-control"
+            placeholder="Enter address line 2">
         </div>
 
         <div class="form-row">

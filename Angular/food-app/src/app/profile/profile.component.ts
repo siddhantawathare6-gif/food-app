@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { AuthService } from '../auth/service/AuthService';
 import { UserService } from '../auth/service/UserService';
+import { API_URL_UD } from '../constants/url';
 
 @Component({
   selector: 'app-profile',
@@ -38,6 +39,10 @@ export class ProfileComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   previousUrl: string = '/';
+  selectedImage: File | null = null;
+  imagePreview: string | null = null;
+  isUploadingImage = false;
+  avatarVersion: number = 0;
 
   // ===== CONSTRUCTOR =====
   constructor(
@@ -51,6 +56,8 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.previousUrl = this.getPreviousUrl();
     this.loadUserProfile();
+    this.authService.avatarVersion$.subscribe(v => this.avatarVersion = v);
+
   }
 
   // ===== GET PREVIOUS URL =====
@@ -79,11 +86,11 @@ export class ProfileComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
-    
+
     this.userService.getUserProfile(userId).subscribe({
       next: (data) => {
         console.log('Profile data received:', data); // Debug log
-        
+
         // Map the response to the user object
         this.user = {
           id: data.id || null,
@@ -101,7 +108,7 @@ export class ProfileComponent implements OnInit {
             country: ''
           }
         };
-        
+
         this.isLoading = false;
         console.log('User object after mapping:', this.user); // Debug log
       },
@@ -169,5 +176,64 @@ export class ProfileComponent implements OnInit {
     } else {
       this.location.back();
     }
+  }
+
+  // ===== GET PROFILE AVATAR URL =====
+  getProfileAvatarUrl(): string {
+    const userId = this.authService.getUserId();
+    if (!userId) return 'assets/avatar-pics/default-avatar.png';
+    return `${API_URL_UD}/user/image/${userId}?v=${this.avatarVersion}`;
+  }
+
+  // ===== HANDLE FILE SELECT =====
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedImage = input.files[0];
+
+      const reader = new FileReader();
+      reader.onload = () => this.imagePreview = reader.result as string;
+      reader.readAsDataURL(this.selectedImage);
+    }
+  }
+
+  // ===== UPLOAD IMAGE =====
+  uploadProfileImage() {
+    if (!this.selectedImage) return;
+
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      this.errorMessage = 'Please login to upload profile picture.';
+      return;
+    }
+
+    this.isUploadingImage = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.userService.uploadUserImage(userId, this.selectedImage).subscribe({
+      next: () => {
+        this.isUploadingImage = false;
+        this.selectedImage = null;
+        this.imagePreview = null;
+        this.successMessage = 'Profile picture updated successfully!';
+
+        // Tell the header to refresh the avatar
+        this.authService.bumpAvatarVersion();
+
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (error) => {
+        this.isUploadingImage = false;
+        this.errorMessage = error.error?.message || 'Failed to upload profile picture.';
+        console.error('Error uploading profile image:', error);
+      }
+    });
+  }
+
+  // ===== FALLBACK FOR IMAGE ERROR =====
+  onAvatarError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/avatar-pics/avatar.jpg';
   }
 }

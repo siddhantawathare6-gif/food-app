@@ -23,5 +23,6 @@ public class UserDTO {
     private Set<Role> roles;
 
     private AddressDTO address;
+    private String imageUrl;
 
 }

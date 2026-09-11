@@ -42,6 +42,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")  // Foreign key to Role
     )
     private Set<Role> roles;
+    private String imageUrl;
 
     @PrePersist
     protected void onCreate() {

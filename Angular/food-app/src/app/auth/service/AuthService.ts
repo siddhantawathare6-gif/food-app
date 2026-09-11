@@ -29,6 +29,9 @@ export class AuthService {
     private userRolesSubject = new BehaviorSubject<string[]>(this.getStoredRoles());
     userRoles$: Observable<string[]> = this.userRolesSubject.asObservable();
 
+    private avatarVersionSubject = new BehaviorSubject<number>(Date.now());
+    avatarVersion$: Observable<number> = this.avatarVersionSubject.asObservable();
+
     constructor(private http: HttpClient) { }
 
     login(request: LoginDTO): Observable<JwtAuthResponse> {
@@ -154,5 +157,9 @@ export class AuthService {
 
     private getStoredUsername(): string | null {
         return this.isLoggedIn() ? localStorage.getItem('username') : null;
+    }
+
+    bumpAvatarVersion(): void {
+        this.avatarVersionSubject.next(Date.now());
     }
 }

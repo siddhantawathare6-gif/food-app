@@ -381,3 +381,30 @@
   margin-bottom: 16px;
   font-size: 14px;
 }
+
+/* ===== IMAGE UPLOAD BLOCK ===== */
+.image-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.image-upload-row input[type="file"] {
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.image-preview {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.image-preview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #eef2f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

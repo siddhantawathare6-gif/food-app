@@ -40,7 +40,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             "/restaurant/fetchAllRestaurant",
             "/restaurant/fetchById",
             "/restaurant/image",
-            "/foodCatalogue"
+            "/foodCatalogue",
+            "/user/image"
     );
 
     // Routes that require authentication AND a specific role.
