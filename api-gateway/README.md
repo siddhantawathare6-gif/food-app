@@ -131,7 +131,8 @@ Purpose: rate-limit authenticated routes per-user (so one user can't hammer the 
 
 PART 4: FLOW DIAGRAM
 
-<img width="2593" height="7204" alt="FLOW-DIAGRAM" src="https://github.com/user-attachments/assets/c64bf2ef-1557-4552-bbe8-b8d1e35c4405" />
+<img width="4462" height="3335" alt="Flow Diagram" src="https://github.com/user-attachments/assets/f69d1b70-60c4-4dce-8944-84f69e2c8572" />
+
 
 PART 5: SEQUENCE DIAGRAMS
 
