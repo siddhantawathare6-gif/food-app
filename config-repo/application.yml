@@ -1,0 +1,38 @@
+# Global defaults applied to ALL microservices
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+    cache:
+      type: redis
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+resilience4j:
+  retry:
+    defaults:
+      max-attempts: ${RETRY_MAX_ATTEMPTS:3}
+      wait-duration: ${RETRY_WAIT_DURATION:500ms}
+      retry-exceptions:
+        - org.springframework.web.client.ResourceAccessException
+        - org.springframework.web.client.HttpServerErrorException
+
+logging:
+  level:
+    root: INFO
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2}
+    expiration: ${JWT_EXPIRATION:86400000}

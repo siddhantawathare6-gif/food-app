@@ -1,0 +1,27 @@
+server:
+  port: ${FOODCATALOGUE_PORT:9095}
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/foodcataloguedb}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:true}
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:ALWAYS}
+      data-locations: classpath:sql/data.sql
+
+resilience4j:
+  retry:
+    instances:
+      restaurantServiceRetry:
+        max-attempts: ${RETRY_MAX_ATTEMPTS:3}
+        wait-duration: ${RETRY_WAIT_DURATION:500ms}
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.web.client.HttpServerErrorException

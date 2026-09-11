@@ -1,0 +1,29 @@
+server:
+  port: ${ORDER_PORT:9097}
+
+spring:
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/order_db}
+  data:
+    mongodb:
+      repositories:
+        type: imperative
+
+resilience4j:
+  retry:
+    instances:
+      userServiceRetry:
+        max-attempts: ${RETRY_MAX_ATTEMPTS:3}
+        wait-duration: ${RETRY_WAIT_DURATION:500ms}
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.web.client.HttpServerErrorException
+        ignore-exceptions:
+          - org.springframework.web.client.HttpClientErrorException  
+
+
+scheduler:
+  order:
+    status:
+      enabled: ${SCHEDULER_ORDER_ENABLED:true}
+      delay: ${SCHEDULER_ORDER_DELAY:30000}

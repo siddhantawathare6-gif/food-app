@@ -1,0 +1,22 @@
+server:
+  port: ${USERINFO_PORT:9093}
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/userdb}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:true}
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:ALWAYS}
+      data-locations: classpath:sql/data.sql
+
+app:
+  image:
+    upload-dir: ${IMAGE_UPLOAD_DIR:uploads/users}
+    base-url: ${IMAGE_BASE_URL:/user/image}
