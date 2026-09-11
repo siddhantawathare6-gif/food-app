@@ -247,16 +247,5 @@ Result: all @Cacheable / @CacheEvict in the service layer automatically use this
 
  Flow Diagram (Request → Response)
  
- flowchart TD
-    A[Client] --> B[API Gateway]
-    B --> C[CorrelationIdFilter<br/>@Order 1]
-    C --> D[RestaurantController<br/>/restaurant]
-    D --> E[RestaurantServiceImpl]
-    E --> F{Redis Cache}
-    E --> G[RestaurantRepository]
-    E --> H[FileStorageServiceImpl]
-    G --> I[(MySQL<br/>restaurantdb)]
-    H --> J[(Disk<br/>uploads/restaurants)]
-    F --> E
-    C --> K[finally: MDC.remove]
-    E --> L[Response back to Client]
+ <img width="3169" height="2810" alt="request-response" src="https://github.com/user-attachments/assets/bc798df7-8c5a-49c6-9973-38a459938373" />
+
