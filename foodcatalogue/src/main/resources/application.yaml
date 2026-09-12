@@ -1,52 +1,52 @@
 server:
   port: ${FOODCATALOGUE_PORT:9095}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
 
 spring:
   application:
     name: ${APP_NAME:food-catalogue-service}
   config:
     import: "optional:configserver:http://localhost:8888"
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/foodcataloguedb}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
-  jpa:
-    hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    show-sql: ${JPA_SHOW_SQL:true}
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: ${SQL_INIT_MODE:ALWAYS}
-      data-locations: classpath:sql/data.sql
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-    cache:
-      type: redis
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,loggers
-
-resilience4j:
-  retry:
-    instances:
-      restaurantServiceRetry:
-        max-attempts: ${RETRY_MAX_ATTEMPTS:3}
-        wait-duration: ${RETRY_WAIT_DURATION:500ms}
-        retry-exceptions:
-          - org.springframework.web.client.ResourceAccessException
-          - org.springframework.web.client.HttpServerErrorException
-
-logging:
-  level:
-    io.github.resilience4j: DEBUG
+#  datasource:
+#    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/foodcataloguedb}
+#    username: ${SPRING_DATASOURCE_USERNAME:root}
+#    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
+#  jpa:
+#    hibernate:
+#      ddl-auto: ${JPA_DDL_AUTO:update}
+#    show-sql: ${JPA_SHOW_SQL:true}
+#    defer-datasource-initialization: true
+#  sql:
+#    init:
+#      mode: ${SQL_INIT_MODE:ALWAYS}
+#      data-locations: classpath:sql/data.sql
+#  data:
+#    redis:
+#      host: ${REDIS_HOST:localhost}
+#      port: ${REDIS_PORT:6379}
+#    cache:
+#      type: redis
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info,loggers
+#
+#resilience4j:
+#  retry:
+#    instances:
+#      restaurantServiceRetry:
+#        max-attempts: ${RETRY_MAX_ATTEMPTS:3}
+#        wait-duration: ${RETRY_WAIT_DURATION:500ms}
+#        retry-exceptions:
+#          - org.springframework.web.client.ResourceAccessException
+#          - org.springframework.web.client.HttpServerErrorException
+#
+#logging:
+#  level:
+#    io.github.resilience4j: DEBUG

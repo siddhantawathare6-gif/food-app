@@ -5,16 +5,18 @@ spring:
   application:
     name: ${APP_NAME:config-server}
   profiles:
-    active: ${CONFIG_PROFILE:native}
+    active: ${CONFIG_PROFILE:git}
   cloud:
     config:
       server:
-        native:
-          search-locations: ${CONFIG_REPO_PATH:file:../config-repo}
+#        native:
+#          search-locations: ${CONFIG_REPO_PATH:file:../config-repo}
         git:
-          uri: ${CONFIG_REPO_URI:https://github.com/your-org/food-app-config}
+          uri: ${CONFIG_REPO_PATH:https://github.com/siddhantawathare6-gif/food-app}
           default-label: ${CONFIG_REPO_BRANCH:main}
           clone-on-start: true
+          search-paths: ${CONFIG_REPO_SEARCH_PATH:config-repo}
+          force-pull: true
 
 management:
   endpoints:

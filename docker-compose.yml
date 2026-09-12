@@ -8,7 +8,7 @@ services:
     container_name: mysql-foodapp-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: system@123
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-system@123}
     ports:
       - "3307:3306"
     volumes:
@@ -34,6 +34,37 @@ services:
     networks:
       - food-app-network
 
+  
+    # ---------- Config Server ----------
+  config-server:
+    image: siddhant9960/fa-config-server:0.0.1
+    container_name: config-server
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      JAVA_OPTS: ""
+      # CONFIG_PROFILE: native
+      # CONFIG_REPO_PATH: file:/config-repo
+      CONFIG_PROFILE: git
+      CONFIG_REPO_PATH: https://github.com/siddhantawathare6-gif/food-app
+      CONFIG_REPO_BRANCH: main
+      CONFIG_REPO_SEARCH_PATH: config-repo
+      LOGSTASH_HOST: logstash
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+    # volumes:
+    #   - ./config-repo:/config-repo:ro
+    depends_on:
+      - logstash
+      - zipkin
+    networks:
+      - food-app-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   # ---------- Eureka Server ----------
   eureka:
     image: siddhant9960/fa-eureka-server:0.0.1
@@ -45,9 +76,14 @@ services:
       JAVA_OPTS: ""
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      CONFIG_SERVER_URL: http://config-server:8888
     depends_on:
-      - logstash
-      - zipkin
+      logstash:
+        condition: service_started
+      zipkin:
+        condition: service_started
+      config-server:
+        condition: service_healthy
     networks:
       - food-app-network
     healthcheck:
@@ -71,14 +107,18 @@ services:
       SPRING_DATASOURCE_PASSWORD: system@123
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
-      # JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: 9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2
+      JWT_EXPIRATION: 86400000
       REDIS_HOST: redis
+      CONFIG_SERVER_URL: http://config-server:8888
     depends_on:
       eureka:
         condition: service_healthy
       mysql:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     networks:
       - food-app-network
@@ -97,6 +137,7 @@ services:
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
       REDIS_HOST: redis
+      CONFIG_SERVER_URL: http://config-server:8888
     depends_on:
       eureka:
         condition: service_healthy
@@ -107,6 +148,8 @@ services:
       logstash:
         condition: service_started
       redis:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     networks:
       - food-app-network
@@ -129,6 +172,7 @@ services:
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
       REDIS_HOST: redis
+      CONFIG_SERVER_URL: http://config-server:8888
     depends_on:
       eureka:
         condition: service_healthy
@@ -136,6 +180,8 @@ services:
         condition: service_healthy
       logstash:
         condition: service_started
+      config-server:
+        condition: service_healthy
     networks:
       - food-app-network
 
@@ -155,6 +201,7 @@ services:
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
       REDIS_HOST: redis
+      CONFIG_SERVER_URL: http://config-server:8888
     depends_on:
       eureka:
         condition: service_healthy
@@ -165,6 +212,8 @@ services:
       logstash:
         condition: service_started
       redis:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     networks:
       - food-app-network
@@ -183,7 +232,9 @@ services:
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
       REDIS_HOST: redis
-      # JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: 9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2
+      JWT_EXPIRATION: 86400000
+      CONFIG_SERVER_URL: http://config-server:8888
     depends_on:
       eureka:
         condition: service_healthy
@@ -199,6 +250,8 @@ services:
         condition: service_healthy
       logstash:
         condition: service_started
+      config-server:
+        condition: service_healthy
     networks:
       - food-app-network
 
@@ -291,6 +344,7 @@ services:
       - restaurant
       - foodcatalogue
       - api-gateway
+      - config-server
     networks:
       - food-app-network
 

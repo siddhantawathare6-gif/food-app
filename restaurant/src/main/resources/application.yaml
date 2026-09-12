@@ -1,49 +1,49 @@
 server:
   port: ${RESTAURANT_PORT:9091}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
 
 spring:
   application:
     name: ${APP_NAME:restaurant-service}
   config:
     import: "optional:configserver:http://localhost:8888"
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/restaurantdb}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
-  jpa:
-    hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    show-sql: ${JPA_SHOW_SQL:true}
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: ${SQL_INIT_MODE:ALWAYS}
-      data-locations: classpath:sql/data.sql
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-  cache:
-    type: redis
-  # File upload size limits
-  servlet:
-    multipart:
-      max-file-size: ${MAX_FILE_SIZE:10MB}
-      max-request-size: ${MAX_REQUEST_SIZE:10MB}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,loggers
-
-# Image upload configuration
-app:
-  image:
-    upload-dir: ${IMAGE_UPLOAD_DIR:uploads/restaurants}
-    base-url: ${IMAGE_BASE_URL:/restaurant/image}
+#  datasource:
+#    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/restaurantdb}
+#    username: ${SPRING_DATASOURCE_USERNAME:root}
+#    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
+#  jpa:
+#    hibernate:
+#      ddl-auto: ${JPA_DDL_AUTO:update}
+#    show-sql: ${JPA_SHOW_SQL:true}
+#    defer-datasource-initialization: true
+#  sql:
+#    init:
+#      mode: ${SQL_INIT_MODE:ALWAYS}
+#      data-locations: classpath:sql/data.sql
+#  data:
+#    redis:
+#      host: ${REDIS_HOST:localhost}
+#      port: ${REDIS_PORT:6379}
+#  cache:
+#    type: redis
+#  # File upload size limits
+#  servlet:
+#    multipart:
+#      max-file-size: ${MAX_FILE_SIZE:10MB}
+#      max-request-size: ${MAX_REQUEST_SIZE:10MB}
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info,loggers
+#
+## Image upload configuration
+#app:
+#  image:
+#    upload-dir: ${IMAGE_UPLOAD_DIR:uploads/restaurants}
+#    base-url: ${IMAGE_BASE_URL:/restaurant/image}
