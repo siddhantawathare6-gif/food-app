@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+  labels:
+    app: order
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: siddhant9960/fa-order-service:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9097
+          env:
+            - name: CONFIG_SERVER_URL
+              value: http://config-server:8888
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka:8761/eureka
+            - name: MONGODB_URI
+              value: mongodb://mongo:27017/order_db
+            - name: REDIS_HOST
+              value: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+spec:
+  selector:
+    app: order
+  ports:
+    - port: 9097
+      targetPort: 9097

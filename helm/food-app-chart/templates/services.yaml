@@ -1,0 +1,67 @@
+{{- range $name, $svc := .Values.services }}
+{{- if $svc.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $name }}
+spec:
+  replicas: {{ $svc.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      enableServiceLinks: false
+      {{- if $svc.waitForMysql }}
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command: ["sh","-c","until nc -z mysql 3306; do echo waiting for mysql; sleep 3; done;"]
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          image: {{ $svc.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ $svc.port }}
+          env:
+            {{- range $k, $v := $svc.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- if $svc.useEncryptKey }}
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: encrypt-key
+                  key: ENCRYPT_KEY
+            {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ $name }}
+  {{- if $svc.nodePort }}
+  type: NodePort
+  ports:
+    - port: {{ $svc.port }}
+      targetPort: {{ $svc.port }}
+      nodePort: {{ $svc.nodePort }}
+  {{- else }}
+  ports:
+    - port: {{ $svc.port }}
+      targetPort: {{ $svc.port }}
+  {{- end }}
+{{- end }}
+{{- end }}

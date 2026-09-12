@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userinfo
+  labels:
+    app: userinfo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userinfo
+  template:
+    metadata:
+      labels:
+        app: userinfo
+    spec:
+      containers:
+        - name: userinfo
+          image: siddhant9960/fa-userinfo-service:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9093
+          env:
+            - name: CONFIG_SERVER_URL
+              value: http://config-server:8888
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka:8761/eureka
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/userdb
+            - name: REDIS_HOST
+              value: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userinfo
+spec:
+  selector:
+    app: userinfo
+  ports:
+    - port: 9093
+      targetPort: 9093

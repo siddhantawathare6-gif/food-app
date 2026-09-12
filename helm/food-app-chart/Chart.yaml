@@ -1,0 +1,6 @@
+apiVersion: v2
+name: food-app-chart
+description: Helm chart for the Food App microservices stack
+type: application
+version: 1.0.0
+appVersion: "0.0.1"

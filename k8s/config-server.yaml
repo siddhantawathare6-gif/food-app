@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-server
+  template:
+    metadata:
+      labels:
+        app: config-server
+    spec:
+      containers:
+        - name: config-server
+          image: siddhant9960/fa-config-server:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+          env:
+            - name: CONFIG_SERVER_PORT
+              value: "8888"
+            - name: CONFIG_PROFILE
+              value: git
+            - name: CONFIG_REPO_URI
+              value: https://github.com/siddhantawathare6-gif/food-app
+            - name: CONFIG_REPO_BRANCH
+              value: main
+            - name: CONFIG_REPO_SEARCH_PATH
+              value: config-repo
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: encrypt-key
+                  key: ENCRYPT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server
+spec:
+  selector:
+    app: config-server
+  ports:
+    - port: 8888
+      targetPort: 8888

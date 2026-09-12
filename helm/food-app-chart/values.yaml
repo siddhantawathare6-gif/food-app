@@ -1,0 +1,97 @@
+namespace: food-app
+
+services:
+  config-server:
+    enabled: true
+    image: siddhant9960/fa-config-server:0.0.1
+    port: 8888
+    replicas: 1
+    env:
+      CONFIG_PROFILE: git
+      CONFIG_REPO_URI: https://github.com/siddhantawathare6-gif/food-app
+      CONFIG_REPO_BRANCH: main
+      CONFIG_REPO_SEARCH_PATH: config-repo
+    useEncryptKey: true
+
+  eureka:
+    enabled: true
+    image: siddhant9960/fa-eureka-server:0.0.1
+    port: 8761
+    replicas: 1
+    env:
+      CONFIG_SERVER_URL: http://config-server:8888
+
+  userinfo:
+    enabled: true
+    image: siddhant9960/fa-userinfo-service:0.0.1
+    port: 9093
+    replicas: 1
+    waitForMysql: true
+    env:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/userdb
+      REDIS_HOST: redis
+
+  restaurant:
+    enabled: true
+    image: siddhant9960/fa-restaurant-service:0.0.1
+    port: 9091
+    replicas: 1
+    waitForMysql: true
+    env:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/restaurantdb
+      REDIS_HOST: redis
+
+  foodcatalogue:
+    enabled: true
+    image: siddhant9960/fa-foodcatalogue-service:0.0.1
+    port: 9095
+    replicas: 1
+    waitForMysql: true
+    env:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foodcataloguedb
+      REDIS_HOST: redis
+
+  order:
+    enabled: true
+    image: siddhant9960/fa-order-service:0.0.1
+    port: 9097
+    replicas: 1
+    env:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      MONGODB_URI: mongodb://mongo:27017/order_db
+      REDIS_HOST: redis
+
+  api-gateway:
+    enabled: true
+    image: siddhant9960/fa-api-gateway:0.0.1
+    port: 8080
+    replicas: 1
+    nodePort: 30080
+    env:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      REDIS_HOST: redis
+
+  frontend:
+    enabled: true
+    image: siddhant9960/fa-foodapp-angular:0.0.1
+    port: 80
+    replicas: 1
+    nodePort: 30000
+
+mysql:
+  image: mysql:8.0
+  password: system@123
+
+mongo:
+  image: mongo:8.0.4
+
+redis:
+  image: redis:7-alpine
