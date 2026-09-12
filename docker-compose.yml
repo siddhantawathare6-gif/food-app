@@ -52,6 +52,10 @@ services:
       CONFIG_REPO_SEARCH_PATH: config-repo
       LOGSTASH_HOST: logstash
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      JWT_SECRET: 9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2
+      JWT_EXPIRATION: 86400000
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: system@123
     # volumes:
     #   - ./config-repo:/config-repo:ro
     depends_on:

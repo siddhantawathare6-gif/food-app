@@ -34,5 +34,5 @@ logging:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:9dd088e3bccaa624d01d7f7159e7a82dbec6a6094e0c6926b7445652ab05f0a2}
+    secret: '{cipher}8c7e0399bf55b11b6fdafacba0df562d4011bce444fee7cc8cb8372e368e5b880d8a72038be88d8b2019b14b211a8224d53024c855dce15453db6b20f5887970c3c1b25c2a71f95d7581b3a94857a72c119fc84be98c83061d11e8f5d07965ff'
     expiration: ${JWT_EXPIRATION:86400000}

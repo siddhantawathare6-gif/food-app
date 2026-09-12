@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/restaurantdb}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:system@123}
+    username: root
+    password: '{cipher}74ffaa4a2276b45c2bb8225c17d729b631b1445c0c2de9d874db29504b955257'
   jpa:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
